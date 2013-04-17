@@ -24,4 +24,12 @@ figh = figure;
 	'string','>',...
 	'Callback','view_mp_atoms(''step_right'',EEG)');
 
+% plot of original signal
+subplot(211);
+plot(EEG.data(1,:,1));
+
+% plot of it's reconstruction
+subplot(212);
+plot(real(EEG.book(1,1).reconstruction));
+
 end

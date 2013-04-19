@@ -1,10 +1,10 @@
-function [out_book] = mp_calc(EEG,channel_nr,epoch_nr,minS,maxS,dE,energy,iter,nfft)
+function [out_book] = mp_calc(EEG,channel_nr,epoch_nr,minS,maxS,dE,energy,ite
 
   if (channel_nr > EEG.nbchan) || (channel_nr < 1)
-  throw(MException('MatchingPursuit:mp_calc','Nonexisting channel or epoch number.'));
+  throw(MException('MatchingPursuit:OutOfBonds','Nonexisting channel or epoch number.'));
 
 elseif (epoch_nr > EEG.trials) || (epoch_nr < 1)
-  throw(MException('MatchingPursuit:mp_calc','Nonexisting epoch number.'));
+  throw(MException('MatchingPursuit:OutOfBonds','Nonexisting epoch number.'));
  else
     dictionary_params = [minS maxS dE];
     disp 'Dictionary params - done';

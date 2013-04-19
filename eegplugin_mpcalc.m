@@ -1,7 +1,7 @@
 function eegplugin_mpcalc(fig, try_strings, catch_strings)
 
 if nargin < 3
-    error('eegplugin_mp_calc requires 3 arguments');
+throw(MException('MatchingPursuit:eegplugin_mpcalc','Function eegplugin_mp_calc requires 3 arguments, only %s given.',len(nargin)));
 end;
 
 Toolmenu = findobj(fig, 'tag', 'tools');

@@ -43,24 +43,14 @@ if ~isempty(params)
     params.iter   = str2num(params.iter);
     params.nfft   = str2num(params.nfft);
     params.energy   = str2num(params.energy);
-
-    %EEG.book = [];
     
-    
-    a = 'Calculations for channel: ';
-    b = ', epoch: ';
     for ch = 1:1:size(params.channel_nr,2)
         for ep = 1:1:size(params.epoch_nr,2)
-            %coreOfName = 'blablabla';
-            %nameOfBookVariable = sprintf('%s_%u_%u.cnf',coreOfName,ch,ep);
-
-            
-            EEG.book(ch,ep) = mp_calc(EEG,ch,ep,params.minS,params.maxS,params.dE,params.energy,params.iter,params.nfft);
-            sprintf('%s%u%s%u.',a,ch,b,ep)
+            sprintf('Calculations for channel: %u, epoch: %u.',ch,ep)
+            EEG.book(ch,ep) = mp_calc(EEG,params.channel_nr(ch),params.epoch_nr(ep),params.minS,params.maxS,params.dE,params.energy,params.iter,params.nfft);
         end
     end
-    clear a;
-    clear b;
+
     
     disp 'Done'
 

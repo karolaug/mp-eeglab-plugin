@@ -25,11 +25,14 @@ figh = figure;
 	'Callback','view_mp_atoms(''step_right'',EEG)');
 
 % plot of original signal
-subplot(211);
+subplot(321);
 plot(EEG.data(1,:,1));
 
 % plot of it's reconstruction
-subplot(212);
+subplot(323);
 plot(real(EEG.book(1,1).reconstruction));
 
+% plot of a current atom
+subplot(325);
+plot(real(EEG.book(1,1).reconstruction));
 end

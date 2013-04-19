@@ -44,13 +44,15 @@ if ~isempty(params)
     params.nfft   = str2num(params.nfft);
     params.energy   = str2num(params.energy);
     
+    
+    EEG = rmfield(EEG , 'book');
+    
     for ch = 1:1:size(params.channel_nr,2)
         for ep = 1:1:size(params.epoch_nr,2)
             sprintf('Calculations for channel: %u, epoch: %u.',ch,ep)
-            EEG.book(ch,ep) = mp_calc(EEG,params.channel_nr(ch),params.epoch_nr(ep),params.minS,params.maxS,params.dE,params.energy,params.iter,params.nfft);
+            EEG.book(ep,ch).reconstruction = mp_calc(EEG,params.channel_nr(ch),params.epoch_nr(ep),params.minS,params.maxS,params.dE,params.energy,params.iter,params.nfft);
         end
     end
-
     
     disp 'Done'
 

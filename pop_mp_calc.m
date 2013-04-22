@@ -34,7 +34,8 @@ uilist = { ...
 
 [~, ~, err params] = inputgui( 'geometry', geometry, 'uilist', uilist, 'helpcom', 'pophelp(''pop_mp_calc'');', 'title' , title_string);
 
-if ~isempty(params)
+%if ~isempty(params)
+try
     params.channel_nr = str2num(params.channel_nr);
     params.epoch_nr   = str2num(params.epoch_nr);
     params.dE   = str2num(params.dE);
@@ -45,7 +46,12 @@ if ~isempty(params)
     params.energy   = str2num(params.energy);
     
     
-    EEG = rmfield(EEG , 'book');
+    try
+        EEG = rmfield(EEG , 'book');
+    catch
+        
+    end
+    
     
     for ch = 1:1:size(params.channel_nr,2)
         for ep = 1:1:size(params.epoch_nr,2)
@@ -55,7 +61,9 @@ if ~isempty(params)
     end
     
     disp 'Done'
-
+    
+catch
+    disp 'Aborted by user'
 end
 
 end

@@ -19,7 +19,7 @@ if strcmp(check_string,'new_plot')
     
     
     MPsettings.figure = figure('UserData', MPsettings,...
-      'Color', MPsettings.color, 'name', MPsettings.title,...
+      'Color', MPsettings.color, 'Toolbar' , 'figure' , 'name', MPsettings.title,...
       'MenuBar','none','tag', MPsettings.tag ,'Position',MPsettings.position, ...
       'numbertitle', 'off', 'visible', 'on');
 
@@ -30,27 +30,27 @@ if strcmp(check_string,'new_plot')
     posepoch(2,:) = [ 0.9500    0.8000    0.0300    0.0300 ]; % > - button
     posepoch(4,:) = [ 0.8500    0.8500    0.1000    0.0300 ]; % _ - label
     % creation of epoch-controlls:
-    e = zeros(4,1);
-    e(1) = uicontrol('Parent',MPsettings.figure, ...
+    MPsettings.e = zeros(4,1);
+    MPsettings.e(1) = uicontrol('Parent',MPsettings.figure, ...
         'Units', 'normalized', ...
         'Position', posepoch(1,:), ...
         'Tag','epoch_button_left',...
         'string','<',...
         'Callback','view_mp_atoms(''epoch_step_left'')');
-    e(2) = uicontrol('Parent',MPsettings.figure, ...
+    MPsettings.e(2) = uicontrol('Parent',MPsettings.figure, ...
         'Units', 'normalized', ...
         'Position', posepoch(2,:), ...
         'Tag','epoch_button_right',...
         'string','>',...
         'Callback','view_mp_atoms(''epoch_step_right'')');
-    e(3) = uicontrol('Parent',MPsettings.figure, ...
+    MPsettings.e(3) = uicontrol('Parent',MPsettings.figure, ...
         'Units', 'normalized', ...
         'BackgroundColor',[1 1 1], ...
         'Position', posepoch(3,:), ...
         'Style','edit', ...
         'Tag','epoch_text',...
         'string', MPsettings.trialstag);
-    e(4) = uicontrol('Parent',MPsettings.figure, ...
+    MPsettings.e(4) = uicontrol('Parent',MPsettings.figure, ...
         'Style','text', ...
         'Units', 'normalized', ...
         'Position', posepoch(4,:), ...
@@ -63,27 +63,27 @@ if strcmp(check_string,'new_plot')
     poschan(2,:) = [ 0.9500    0.7000    0.0300    0.0300 ]; % > - button
     poschan(4,:) = [ 0.8500    0.7500    0.1000    0.0300 ]; % _ - label
     % creation of channel-controlls:
-    ch = zeros(4,1);
-    ch(1) = uicontrol('Parent',MPsettings.figure, ...
+    MPsettings.ch = zeros(4,1);
+    MPsettings.ch(1) = uicontrol('Parent',MPsettings.figure, ...
         'Units', 'normalized', ...
         'Position', poschan(1,:), ...
         'Tag','epoch_button_left',...
         'string','<',...
         'Callback','view_mp_atoms(''chan_step_left'')');
-    ch(2) = uicontrol('Parent',MPsettings.figure, ...
+    MPsettings.ch(2) = uicontrol('Parent',MPsettings.figure, ...
         'Units', 'normalized', ...
         'Position', poschan(2,:), ...
         'Tag','epoch_button_right',...
         'string','>',...
         'Callback','view_mp_atoms(''chan_step_right'')');
-     ch(3) = uicontrol('Parent',MPsettings.figure, ...
+    MPsettings.ch(3) = uicontrol('Parent',MPsettings.figure, ...
         'Units', 'normalized', ...
         'BackgroundColor',[1 1 1], ...
         'Position', poschan(3,:), ...
         'Style','edit', ...
         'Tag','epoch_text',...
         'string', MPsettings.channelstag);
-     ch(4) = uicontrol('Parent',MPsettings.figure, ...
+    MPsettings.ch(4) = uicontrol('Parent',MPsettings.figure, ...
         'Style','text', ...
         'Units', 'normalized', ...
         'Position', poschan(4,:), ...
@@ -96,27 +96,27 @@ if strcmp(check_string,'new_plot')
     posatom(2,:) = [ 0.9500    0.2000    0.0300    0.0300 ]; % > - button
     posatom(4,:) = [ 0.8500    0.2500    0.1000    0.0300 ]; % _ - label
     % creation of atom-controlls:
-    a = zeros(4,1);
-    a(1) = uicontrol('Parent',MPsettings.figure, ...
+    MPsettings.a = zeros(4,1);
+    MPsettings.a(1) = uicontrol('Parent',MPsettings.figure, ...
         'Units', 'normalized', ...
         'Position', posatom(1,:), ...
         'Tag','epoch_button_left',...
         'string','<',...
         'Callback','view_mp_atoms(''atom_step_left'')');
-    a(2) = uicontrol('Parent',MPsettings.figure, ...
+    MPsettings.a(2) = uicontrol('Parent',MPsettings.figure, ...
         'Units', 'normalized', ...
         'Position', posatom(2,:), ...
         'Tag','epoch_button_right',...
         'string','>',...
         'Callback','view_mp_atoms(''atom_step_right'')');
-    a(3) = uicontrol('Parent',MPsettings.figure, ...
+    MPsettings.a(3) = uicontrol('Parent',MPsettings.figure, ...
         'Units', 'normalized', ...
         'BackgroundColor',[1 1 1], ...
         'Position', posatom(3,:), ...
         'Style','edit', ...
         'Tag','epoch_text',...
         'string', MPsettings.atomstag);
-     a(4) = uicontrol('Parent',MPsettings.figure, ...
+     MPsettings.a(4) = uicontrol('Parent',MPsettings.figure, ...
         'Style','text', ...
         'Units', 'normalized', ...
         'Position', posatom(4,:), ...
@@ -142,26 +142,86 @@ if strcmp(check_string,'new_plot')
         
         
 elseif strcmp(check_string, 'epoch_step_left')
-
+    if MPsettings.trialstag == 1
+        disp 'No previous epochs';
+    else
+        disp 'Displaying previous epoch'
+        MPsettings.trialstag = MPsettings.trialstag - 1;
+        set(MPsettings.e(3),'String',num2str(MPsettings.trialstag));
+        
+        try
+            plot(real(EEG.book(MPsettings.trialstag,MPsettings.channelstag).reconstruction(MPsettings.atomstag,:)),'Parent',MPsettings.atomaxis);
+            set(MPsettings.atomaxis,'YLim',MPsettings.yaxlimits);
+            title(MPsettings.atomaxis,'Reconstructing functions');
+        catch
+            MPsettings.atomstag = 1;
+            plot(real(EEG.book(MPsettings.trialstag,MPsettings.channelstag).reconstruction(MPsettings.atomstag,:)),'Parent',MPsettings.atomaxis);
+            set(MPsettings.atomaxis,'YLim',MPsettings.yaxlimits);
+            title(MPsettings.atomaxis,'Reconstructing functions');
+        end
+        
+        plot(sum(real(EEG.book(MPsettings.trialstag,MPsettings.channelstag).reconstruction),1),'Parent',MPsettings.reconstructaxis);
+        title(MPsettings.reconstructaxis,'Signal reconstruction');
+        set(MPsettings.reconstructaxis,'YLim',MPsettings.yaxlimits);
+        
+        plot(EEG.data(MPsettings.channelstag,:,MPsettings.trialstag),'Parent',MPsettings.originalaxis);
+        title(MPsettings.originalaxis,'Original signal');
+        MPsettings.yaxlimits=get(MPsettings.originalaxis,'YLim');        
+    end
+    
 elseif strcmp(check_string, 'epoch_step_right')
-
+    if MPsettings.trialstag == size(EEG.book,1)
+        disp 'No further epochs';
+    else
+        disp 'Displaying next epoch'
+        MPsettings.trialstag = MPsettings.trialstag + 1;
+        set(MPsettings.e(3),'String',num2str(MPsettings.trialstag));
+        
+        try
+            plot(real(EEG.book(MPsettings.trialstag,MPsettings.channelstag).reconstruction(MPsettings.atomstag,:)),'Parent',MPsettings.atomaxis);
+            set(MPsettings.atomaxis,'YLim',MPsettings.yaxlimits);
+            title(MPsettings.atomaxis,'Reconstructing functions');
+        catch
+            MPsettings.atomstag = 1;
+            plot(real(EEG.book(MPsettings.trialstag,MPsettings.channelstag).reconstruction(MPsettings.atomstag,:)),'Parent',MPsettings.atomaxis);
+            set(MPsettings.atomaxis,'YLim',MPsettings.yaxlimits);
+            title(MPsettings.atomaxis,'Reconstructing functions');
+        end
+        
+        plot(sum(real(EEG.book(MPsettings.trialstag,MPsettings.channelstag).reconstruction),1),'Parent',MPsettings.reconstructaxis);
+        title(MPsettings.reconstructaxis,'Signal reconstruction');
+        set(MPsettings.reconstructaxis,'YLim',MPsettings.yaxlimits);
+        
+        plot(EEG.data(MPsettings.channelstag,:,MPsettings.trialstag),'Parent',MPsettings.originalaxis);
+        title(MPsettings.originalaxis,'Original signal');
+        MPsettings.yaxlimits=get(MPsettings.originalaxis,'YLim');        
+    end
+    
 elseif strcmp(check_string, 'chan_step_left')
     if MPsettings.channelstag == 1
         disp 'No previous channels';
     else
         disp 'Displaying previous channel'
         MPsettings.channelstag = MPsettings.channelstag - 1;
+        set(MPsettings.ch(3),'String',num2str(MPsettings.channelstag));
         
-        plot(real(EEG.book(MPsettings.trialstag,MPsettings.channelstag).reconstruction(MPsettings.atomstag,:)),'Parent',MPsettings.atomaxis);
-        set(MPsettings.atomaxis,'YLim',MPsettings.yaxlimits);
-        title('Reconstructing functions');
+        try
+            plot(real(EEG.book(MPsettings.trialstag,MPsettings.channelstag).reconstruction(MPsettings.atomstag,:)),'Parent',MPsettings.atomaxis);
+            set(MPsettings.atomaxis,'YLim',MPsettings.yaxlimits);
+            title(MPsettings.atomaxis,'Reconstructing functions');
+        catch
+            MPsettings.atomstag = 1;
+            plot(real(EEG.book(MPsettings.trialstag,MPsettings.channelstag).reconstruction(MPsettings.atomstag,:)),'Parent',MPsettings.atomaxis);
+            set(MPsettings.atomaxis,'YLim',MPsettings.yaxlimits);
+            title(MPsettings.atomaxis,'Reconstructing functions');
+        end
         
         plot(sum(real(EEG.book(MPsettings.trialstag,MPsettings.channelstag).reconstruction),1),'Parent',MPsettings.reconstructaxis);
-        title('Signal reconstruction');
+        title(MPsettings.reconstructaxis,'Signal reconstruction');
         set(MPsettings.reconstructaxis,'YLim',MPsettings.yaxlimits);
         
-        plot(EEG.data(MPsettings.trialstag,:,MPsettings.channelstag),'Parent',MPsettings.originalaxis);
-        title('Original signal');
+        plot(EEG.data(MPsettings.channelstag,:,MPsettings.trialstag),'Parent',MPsettings.originalaxis);
+        title(MPsettings.originalaxis,'Original signal');
         MPsettings.yaxlimits=get(MPsettings.originalaxis,'YLim');        
     end
         
@@ -171,17 +231,25 @@ elseif strcmp(check_string, 'chan_step_right')
     else
         disp 'Displaying next channel'
         MPsettings.channelstag = MPsettings.channelstag + 1;
+        set(MPsettings.ch(3),'String',num2str(MPsettings.channelstag));
         
-        plot(real(EEG.book(MPsettings.trialstag,MPsettings.channelstag).reconstruction(MPsettings.atomstag,:)),'Parent',MPsettings.atomaxis);
-        set(MPsettings.atomaxis,'YLim',MPsettings.yaxlimits);
-        title('Reconstructing functions');
+        try
+            plot(real(EEG.book(MPsettings.trialstag,MPsettings.channelstag).reconstruction(MPsettings.atomstag,:)),'Parent',MPsettings.atomaxis);
+            set(MPsettings.atomaxis,'YLim',MPsettings.yaxlimits);
+            title(MPsettings.atomaxis,'Reconstructing functions');
+        catch
+            MPsettings.atomstag = 1;
+            plot(real(EEG.book(MPsettings.trialstag,MPsettings.channelstag).reconstruction(MPsettings.atomstag,:)),'Parent',MPsettings.atomaxis);
+            set(MPsettings.atomaxis,'YLim',MPsettings.yaxlimits);
+            title(MPsettings.atomaxis,'Reconstructing functions');
+        end
         
         plot(sum(real(EEG.book(MPsettings.trialstag,MPsettings.channelstag).reconstruction),1),'Parent',MPsettings.reconstructaxis);
-        title('Signal reconstruction');
+        title(MPsettings.reconstructaxis,'Signal reconstruction');
         set(MPsettings.reconstructaxis,'YLim',MPsettings.yaxlimits);
         
-        plot(EEG.data(MPsettings.trialstag,:,MPsettings.channelstag),'Parent',MPsettings.originalaxis);
-        title('Original signal');
+        plot(EEG.data(MPsettings.channelstag,:,MPsettings.trialstag),'Parent',MPsettings.originalaxis);
+        title(MPsettings.originalaxis,'Original signal');
         MPsettings.yaxlimits=get(MPsettings.originalaxis,'YLim');        
     end
     
@@ -191,9 +259,10 @@ elseif strcmp(check_string, 'atom_step_left')
     else
         disp 'Displaying previous atom'
         MPsettings.atomstag = MPsettings.atomstag - 1;
+        set(MPsettings.a(3),'String',num2str(MPsettings.atomstag));
         plot(real(EEG.book(MPsettings.trialstag,MPsettings.channelstag).reconstruction(MPsettings.atomstag,:)) , 'Parent',MPsettings.atomaxis);
         set(MPsettings.atomaxis,'YLim',MPsettings.yaxlimits);
-        title('Reconstructing functions');
+        title(MPsettings.atomaxis,'Reconstructing functions');
     end
     
 elseif strcmp(check_string, 'atom_step_right')
@@ -202,9 +271,10 @@ elseif strcmp(check_string, 'atom_step_right')
     else
         disp 'Displaying next atom'
         MPsettings.atomstag = MPsettings.atomstag + 1;
+        set(MPsettings.a(3),'String',num2str(MPsettings.atomstag));
         plot(real(EEG.book(MPsettings.trialstag,MPsettings.channelstag).reconstruction(MPsettings.atomstag,:)) , 'Parent',MPsettings.atomaxis);
         set(MPsettings.atomaxis,'YLim',MPsettings.yaxlimits);
-        title('Reconstructing functions');
+        title(MPsettings.atomaxis,'Reconstructing functions');
     end
     
     

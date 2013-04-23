@@ -1,8 +1,8 @@
 function view_mp_atoms(check_string)
 
 
-global MPsettings;
-global EEG;
+persistent MPsettings;
+persistent EEG;
 
 
 if strcmp(check_string,'new_plot')

@@ -148,7 +148,11 @@ elseif strcmp(check_string, 'epoch_step_left')
     else
         disp 'Displaying previous epoch'
         MPsettings.trialstag = MPsettings.trialstag - 1;
-        set(MPsettings.e(3),'String',num2str(MPsettings.trialstag));
+        set(MPsettings.e(3),'String',num2str(EEG.book.epoch_labels(MPsettings.trialstag)));
+        
+        plot(EEG.data(MPsettings.channelstag,:,MPsettings.trialstag),'Parent',MPsettings.originalaxis);
+        title(MPsettings.originalaxis,'Original signal');
+        MPsettings.yaxlimits=get(MPsettings.originalaxis,'YLim');
         
         try
             plot(squeeze(real(EEG.book.reconstruction(MPsettings.trialstag,MPsettings.channelstag,MPsettings.atomstag,:))),'b','Parent',MPsettings.atomaxis);
@@ -166,9 +170,7 @@ elseif strcmp(check_string, 'epoch_step_left')
         title(MPsettings.reconstructaxis,'Signal reconstruction');
         set(MPsettings.reconstructaxis,'YLim',MPsettings.yaxlimits);
         
-        plot(EEG.data(MPsettings.channelstag,:,MPsettings.trialstag),'Parent',MPsettings.originalaxis);
-        title(MPsettings.originalaxis,'Original signal');
-        MPsettings.yaxlimits=get(MPsettings.originalaxis,'YLim');        
+        
     end
     
 elseif strcmp(check_string, 'epoch_step_right')
@@ -177,7 +179,11 @@ elseif strcmp(check_string, 'epoch_step_right')
     else
         disp 'Displaying next epoch'
         MPsettings.trialstag = MPsettings.trialstag + 1;
-        set(MPsettings.e(3),'String',num2str(MPsettings.trialstag));
+        set(MPsettings.e(3),'String',num2str(EEG.book.epoch_labels(MPsettings.trialstag)));
+        
+        plot(EEG.data(MPsettings.channelstag,:,MPsettings.trialstag),'Parent',MPsettings.originalaxis);
+        title(MPsettings.originalaxis,'Original signal');
+        MPsettings.yaxlimits=get(MPsettings.originalaxis,'YLim');     
         
         try
             plot(squeeze(real(EEG.book.reconstruction(MPsettings.trialstag,MPsettings.channelstag,MPsettings.atomstag,:))),'b','Parent',MPsettings.atomaxis);
@@ -195,9 +201,7 @@ elseif strcmp(check_string, 'epoch_step_right')
         title(MPsettings.reconstructaxis,'Signal reconstruction');
         set(MPsettings.reconstructaxis,'YLim',MPsettings.yaxlimits);
         
-        plot(EEG.data(MPsettings.channelstag,:,MPsettings.trialstag),'Parent',MPsettings.originalaxis);
-        title(MPsettings.originalaxis,'Original signal');
-        MPsettings.yaxlimits=get(MPsettings.originalaxis,'YLim');        
+        
     end
     
 elseif strcmp(check_string, 'chan_step_left')
@@ -206,7 +210,11 @@ elseif strcmp(check_string, 'chan_step_left')
     else
         disp 'Displaying previous channel'
         MPsettings.channelstag = MPsettings.channelstag - 1;
-        set(MPsettings.ch(3),'String',num2str(MPsettings.channelstag));
+        set(MPsettings.ch(3),'String',num2str(EEG.book.channel_labels{MPsettings.channelstag}));
+        
+        plot(EEG.data(MPsettings.channelstag,:,MPsettings.trialstag),'Parent',MPsettings.originalaxis);
+        title(MPsettings.originalaxis,'Original signal');
+        MPsettings.yaxlimits=get(MPsettings.originalaxis,'YLim');
         
         try
             plot(squeeze(real(EEG.book.reconstruction(MPsettings.trialstag,MPsettings.channelstag,MPsettings.atomstag,:))),'b','Parent',MPsettings.atomaxis);
@@ -224,9 +232,7 @@ elseif strcmp(check_string, 'chan_step_left')
         title(MPsettings.reconstructaxis,'Signal reconstruction');
         set(MPsettings.reconstructaxis,'YLim',MPsettings.yaxlimits);
         
-        plot(EEG.data(MPsettings.channelstag,:,MPsettings.trialstag),'Parent',MPsettings.originalaxis);
-        title(MPsettings.originalaxis,'Original signal');
-        MPsettings.yaxlimits=get(MPsettings.originalaxis,'YLim');        
+        
     end
         
 elseif strcmp(check_string, 'chan_step_right')
@@ -235,7 +241,11 @@ elseif strcmp(check_string, 'chan_step_right')
     else
         disp 'Displaying next channel'
         MPsettings.channelstag = MPsettings.channelstag + 1;
-        set(MPsettings.ch(3),'String',num2str(MPsettings.channelstag));
+        set(MPsettings.ch(3),'String',num2str(EEG.book.channel_labels{MPsettings.channelstag}));
+        
+        plot(EEG.data(MPsettings.channelstag,:,MPsettings.trialstag),'Parent',MPsettings.originalaxis);
+        title(MPsettings.originalaxis,'Original signal');
+        MPsettings.yaxlimits=get(MPsettings.originalaxis,'YLim');   
         
         try
             plot(squeeze(real(EEG.book.reconstruction(MPsettings.trialstag,MPsettings.channelstag,MPsettings.atomstag,:))),'b','Parent',MPsettings.atomaxis);
@@ -253,9 +263,7 @@ elseif strcmp(check_string, 'chan_step_right')
         title(MPsettings.reconstructaxis,'Signal reconstruction');
         set(MPsettings.reconstructaxis,'YLim',MPsettings.yaxlimits);
         
-        plot(EEG.data(MPsettings.channelstag,:,MPsettings.trialstag),'Parent',MPsettings.originalaxis);
-        title(MPsettings.originalaxis,'Original signal');
-        MPsettings.yaxlimits=get(MPsettings.originalaxis,'YLim');        
+      
     end
     
 elseif strcmp(check_string, 'atom_step_left')

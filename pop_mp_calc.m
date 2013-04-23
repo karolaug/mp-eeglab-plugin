@@ -62,10 +62,15 @@ try
     end
     
     EEG.book.epoch_labels = params.epoch_nr;
-    for i = 1:size(params.channel_nr,2)
-        EEG.book.channel_labels{i} = EEG.chanlocs(1,params.channel_nr(i)).labels;
+    if ~isempty(EEG.chanlocs)
+        for i = 1:size(params.channel_nr,2)
+            EEG.book.channel_labels{i} = EEG.chanlocs(1,params.channel_nr(i)).labels;
+        end
+    else
+        for i = 1:size(params.channel_nr,2)
+            EEG.book.channel_labels{i} = num2str(i);
+        end
     end
-    
     disp 'Done'
     
 catch

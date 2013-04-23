@@ -154,12 +154,13 @@ elseif strcmp(check_string, 'epoch_step_left')
         title(MPsettings.originalaxis,'Original signal');
         MPsettings.yaxlimits=get(MPsettings.originalaxis,'YLim');
         
-        try
+        if any(EEG.book.reconstruction(MPsettings.trialstag,MPsettings.channelstag,MPsettings.atomstag+1,:)~=0) == 0 
+            MPsettings.atomstag = 1;
+            set(MPsettings.a(3),'String',num2str(MPsettings.atomstag));
             plot(squeeze(real(EEG.book.reconstruction(MPsettings.trialstag,MPsettings.channelstag,MPsettings.atomstag,:))),'b','Parent',MPsettings.atomaxis);
             set(MPsettings.atomaxis,'YLim',MPsettings.yaxlimits);
             title(MPsettings.atomaxis,'Reconstructing functions');
-        catch
-            MPsettings.atomstag = 1;
+        else
             plot(squeeze(real(EEG.book.reconstruction(MPsettings.trialstag,MPsettings.channelstag,MPsettings.atomstag,:))),'b','Parent',MPsettings.atomaxis);
             set(MPsettings.atomaxis,'YLim',MPsettings.yaxlimits);
             title(MPsettings.atomaxis,'Reconstructing functions');
@@ -185,12 +186,13 @@ elseif strcmp(check_string, 'epoch_step_right')
         title(MPsettings.originalaxis,'Original signal');
         MPsettings.yaxlimits=get(MPsettings.originalaxis,'YLim');     
         
-        try
+        if any(EEG.book.reconstruction(MPsettings.trialstag,MPsettings.channelstag,MPsettings.atomstag+1,:)~=0) == 0 
+            MPsettings.atomstag = 1;
+            set(MPsettings.a(3),'String',num2str(MPsettings.atomstag));
             plot(squeeze(real(EEG.book.reconstruction(MPsettings.trialstag,MPsettings.channelstag,MPsettings.atomstag,:))),'b','Parent',MPsettings.atomaxis);
             set(MPsettings.atomaxis,'YLim',MPsettings.yaxlimits);
             title(MPsettings.atomaxis,'Reconstructing functions');
-        catch
-            MPsettings.atomstag = 1;
+        else
             plot(squeeze(real(EEG.book.reconstruction(MPsettings.trialstag,MPsettings.channelstag,MPsettings.atomstag,:))),'b','Parent',MPsettings.atomaxis);
             set(MPsettings.atomaxis,'YLim',MPsettings.yaxlimits);
             title(MPsettings.atomaxis,'Reconstructing functions');
@@ -216,12 +218,13 @@ elseif strcmp(check_string, 'chan_step_left')
         title(MPsettings.originalaxis,'Original signal');
         MPsettings.yaxlimits=get(MPsettings.originalaxis,'YLim');
         
-        try
+        if any(EEG.book.reconstruction(MPsettings.trialstag,MPsettings.channelstag,MPsettings.atomstag+1,:)~=0) == 0 
+            MPsettings.atomstag = 1;
+            set(MPsettings.a(3),'String',num2str(MPsettings.atomstag));
             plot(squeeze(real(EEG.book.reconstruction(MPsettings.trialstag,MPsettings.channelstag,MPsettings.atomstag,:))),'b','Parent',MPsettings.atomaxis);
             set(MPsettings.atomaxis,'YLim',MPsettings.yaxlimits);
             title(MPsettings.atomaxis,'Reconstructing functions');
-        catch
-            MPsettings.atomstag = 1;
+        else
             plot(squeeze(real(EEG.book.reconstruction(MPsettings.trialstag,MPsettings.channelstag,MPsettings.atomstag,:))),'b','Parent',MPsettings.atomaxis);
             set(MPsettings.atomaxis,'YLim',MPsettings.yaxlimits);
             title(MPsettings.atomaxis,'Reconstructing functions');
@@ -247,12 +250,14 @@ elseif strcmp(check_string, 'chan_step_right')
         title(MPsettings.originalaxis,'Original signal');
         MPsettings.yaxlimits=get(MPsettings.originalaxis,'YLim');   
         
-        try
+        
+        if any(EEG.book.reconstruction(MPsettings.trialstag,MPsettings.channelstag,MPsettings.atomstag+1,:)~=0) == 0 
+            MPsettings.atomstag = 1;
+            set(MPsettings.a(3),'String',num2str(MPsettings.atomstag));
             plot(squeeze(real(EEG.book.reconstruction(MPsettings.trialstag,MPsettings.channelstag,MPsettings.atomstag,:))),'b','Parent',MPsettings.atomaxis);
             set(MPsettings.atomaxis,'YLim',MPsettings.yaxlimits);
             title(MPsettings.atomaxis,'Reconstructing functions');
-        catch
-            MPsettings.atomstag = 1;
+        else
             plot(squeeze(real(EEG.book.reconstruction(MPsettings.trialstag,MPsettings.channelstag,MPsettings.atomstag,:))),'b','Parent',MPsettings.atomaxis);
             set(MPsettings.atomaxis,'YLim',MPsettings.yaxlimits);
             title(MPsettings.atomaxis,'Reconstructing functions');
@@ -279,7 +284,7 @@ elseif strcmp(check_string, 'atom_step_left')
     end
     
 elseif strcmp(check_string, 'atom_step_right')
-    if MPsettings.atomstag == size(EEG.book.reconstruction(MPsettings.trialstag,MPsettings.channelstag,:,:),3) || real(sum(EEG.book.reconstruction(MPsettings.trialstag,MPsettings.channelstag,MPsettings.atomstag+1,:),4))==0
+    if MPsettings.atomstag == size(EEG.book.reconstruction(MPsettings.trialstag,MPsettings.channelstag,:,:),3) || any(EEG.book.reconstruction(MPsettings.trialstag,MPsettings.channelstag,MPsettings.atomstag+1,:)~=0) == 0
         disp 'No further atoms';
     else
         disp 'Displaying next atom'

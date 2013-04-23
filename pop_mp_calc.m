@@ -30,21 +30,21 @@ uilist = { ...
          { 'style', 'text', 'string', 'Maximal number of iterations: ' }, ...
          { 'style', 'edit', 'string', '15', 'tag', 'iter'}, ...
          { 'style', 'text', 'string', 'min_NFFT: ' }, ...
-         { 'style', 'edit', 'string', '128', 'tag', 'nfft'}};
+         { 'style', 'edit', 'string', '1024', 'tag', 'nfft'}};
 
 [~, ~, err params] = inputgui( 'geometry', geometry, 'uilist', uilist, 'helpcom', 'pophelp(''pop_mp_calc'');', 'title' , title_string);
 
-%if ~isempty(params)
+
+
 try
     params.channel_nr = str2num(params.channel_nr);
     params.epoch_nr   = str2num(params.epoch_nr);
-    params.dE   = str2num(params.dE);
-    params.minS   = str2num(params.minS);
-    params.maxS   = str2num(params.maxS);
-    params.iter   = str2num(params.iter);
-    params.nfft   = str2num(params.nfft);
-    params.energy   = str2num(params.energy);
-    
+    params.dE         = str2num(params.dE);
+    params.minS       = str2num(params.minS);
+    params.maxS       = str2num(params.maxS);
+    params.iter       = str2num(params.iter);
+    params.nfft       = str2num(params.nfft);
+    params.energy     = str2num(params.energy);
     
     try
         EEG = rmfield(EEG , 'book');
@@ -52,12 +52,18 @@ try
         
     end
     
-    
+    EEG.book.reconstruction = zeros(size(params.epoch_nr,2),size(params.channel_nr,2),params.iter,size(EEG.data,2));
     for ch = 1:1:size(params.channel_nr,2)
         for ep = 1:1:size(params.epoch_nr,2)
             sprintf('Calculations for channel: %u, epoch: %u.',ch,ep)
-            EEG.book(ep,ch).reconstruction = mp_calc(EEG,params.channel_nr(ch),params.epoch_nr(ep),params.minS,params.maxS,params.dE,params.energy,params.iter,params.nfft);
+            X = mp_calc(EEG,params.channel_nr(ch),params.epoch_nr(ep),params.minS,params.maxS,params.dE,params.energy,params.iter,params.nfft);
+            EEG.book.reconstruction(ep,ch,1:size(X,1),:) = X;
         end
+    end
+    
+    EEG.book.epoch_labels = params.epoch_nr;
+    for i = 1:size(params.channel_nr,2)
+        EEG.book.channel_labels{i} = EEG.chanlocs(1,params.channel_nr(i)).labels;
     end
     
     disp 'Done'

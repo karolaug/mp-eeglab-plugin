@@ -23,6 +23,9 @@ else
     
     disp 'Reconstructing_array - done';
     
+    parameters_array = [];
+    
+    
 end
 
 

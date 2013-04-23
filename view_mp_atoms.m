@@ -172,7 +172,7 @@ elseif strcmp(check_string, 'epoch_step_left')
     end
     
 elseif strcmp(check_string, 'epoch_step_right')
-    if MPsettings.trialstag == size(EEG.book,1)
+    if MPsettings.trialstag == size(EEG.book.epoch_labels,2)
         disp 'No further epochs';
     else
         disp 'Displaying next epoch'
@@ -230,7 +230,7 @@ elseif strcmp(check_string, 'chan_step_left')
     end
         
 elseif strcmp(check_string, 'chan_step_right')
-    if MPsettings.channelstag == size(EEG.book,2)
+    if MPsettings.channelstag == size(EEG.book.channel_labels,2)
         disp 'No further channels';
     else
         disp 'Displaying next channel'

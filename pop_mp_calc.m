@@ -36,7 +36,7 @@ uilist = { ...
 
 
 
-try
+%try
     params.channel_nr = str2num(params.channel_nr);
     params.epoch_nr   = str2num(params.epoch_nr);
     params.dE         = str2num(params.dE);
@@ -56,8 +56,9 @@ try
     for ch = 1:1:size(params.channel_nr,2)
         for ep = 1:1:size(params.epoch_nr,2)
             sprintf('Calculations for channel: %u, epoch: %u.',ch,ep)
-            X = mp_calc(EEG,params.channel_nr(ch),params.epoch_nr(ep),params.minS,params.maxS,params.dE,params.energy,params.iter,params.nfft);
+            [X , Y] = mp_calc(EEG,params.channel_nr(ch),params.epoch_nr(ep),params.minS,params.maxS,params.dE,params.energy,params.iter,params.nfft);
             EEG.book.reconstruction(ep,ch,1:size(X,1),:) = X;
+            EEG.book.parameters(ep,ch) = Y;
         end
     end
     
@@ -73,9 +74,9 @@ try
     end
     disp 'Done'
     
-catch
-    disp 'Aborted by user'
-end
+%catch
+%    disp 'Aborted by user'
+%end
 
 end
 

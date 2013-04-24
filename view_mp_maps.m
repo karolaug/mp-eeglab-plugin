@@ -87,15 +87,69 @@ if strcmp(map_string,'new_plot')
         'string','Channel');
 
     MPmapSettings.mapaxis    = axes('outerposition',[.0  .4  .8  .6]);
-        [time , freqs , map] = countAmap2(EEG.book , 1:EEG.pnts , EEG.srate , MPmapSettings.trialstag , MPmapSettings.channelstag);
-        plotMap(time,freqs,[],[],abs((map)),[],[0 EEG.srate/2],1);
-        title('Time - Frequency map');
+    refresh_map();
         
     MPmapSettings.signalaxis = axes('outerposition',[.0  .1  .8  .3]);
-        X = squeeze(EEG.book.reconstruction(MPmapSettings.trialstag,MPmapSettings.channelstag,:,:));
-        plot(sum(real(X),1),'b');
-        title('Signal reconstruction');
-        Xlim([1 EEG.pnts]);
+    refresh_signal();
+    
+elseif strcmp(map_string,'epoch_step_right')
+    if MPmapSettings.trialstag == size(EEG.book.epoch_labels,2)
+        disp 'No further epochs';
+    else
+        disp 'Displaying next epoch'
+        MPmapSettings.trialstag = MPmapSettings.trialstag + 1;
+        refresh_map();
+        refresh_signal();
+    end
+elseif strcmp(map_string,'epoch_step_left')
+    if MPmapSettings.trialstag == 1
+        disp 'No previous epochs';
+    else
+        disp 'Displaying previous epoch'
+        MPmapSettings.trialstag = MPmapSettings.trialstag - 1;
+        refresh_map();
+        refresh_signal();
+    end
+elseif strcmp(map_string,'chan_step_right')
+    if MPmapSettings.channelstag == size(EEG.book.channel_labels,2)
+        disp 'No further channels';
+    else
+        disp 'Displaying next channel'
+        MPmapSettings.channelstag = MPmapSettings.channelstag + 1;
+        refresh_map();
+        refresh_signal();
+    end
+elseif strcmp(map_string,'chan_step_left')
+    if MPmapSettings.channelstag == 1
+        disp 'No previous channels';
+    else
+        disp 'Displaying previous channel'
+        MPmapSettings.channelstag = MPmapSettings.channelstag - 1;
+        refresh_map();
+        refresh_signal();
+    end
 end
 
+end
+
+
+
+function refresh_map()
+    global MPmapSettings;
+    global EEG;
+    [time , freqs , map] = countAmap2(EEG.book , 1:EEG.pnts , EEG.srate , MPmapSettings.trialstag , MPmapSettings.channelstag);
+    plotMap(time,freqs,[],[],abs((map)),[],[0 EEG.srate/2],1);
+    title(MPmapSettings.mapaxis , 'Time - Frequency map');
+end
+
+function refresh_signal()
+    global MPmapSettings;
+    global EEG;
+    X = squeeze(EEG.book.reconstruction(MPmapSettings.trialstag,MPmapSettings.channelstag,:,:));
+    plot(sum(real(X),1),'b','Parent',MPmapSettings.signalaxis);
+    title(MPmapSettings.signalaxis,'Signal reconstruction');
+    Xlim(MPmapSettings.signalaxis,[1 EEG.pnts]);
+    
+    set(MPmapSettings.e(3) ,'String',num2str(EEG.book.epoch_labels(MPmapSettings.trialstag)));
+    set(MPmapSettings.ch(3),'String',num2str(EEG.book.channel_labels{MPmapSettings.channelstag}));
 end

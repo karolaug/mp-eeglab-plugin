@@ -2,7 +2,7 @@ function plotMap(time , freqs , xticks , yticks , map , Tlimit , Flimit , NICE)
 % plot t-f map
 % Copyright Konrad Kwaskiewicz, 2012
 
-
+global MPmapSettings;
 
 if isempty(xticks)
     xticks=[time(1) time(end/2) time(end)];
@@ -22,7 +22,7 @@ if isempty(Flimit)
 end
 
 if NICE==1
-    imagesc(time,freqs,map);
+    imagesc(time,freqs,map,'Parent',MPmapSettings.mapaxis);
     set(gca,'YDir','default')
 else
 

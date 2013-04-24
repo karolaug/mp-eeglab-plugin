@@ -1,6 +1,9 @@
-function plotMap(time,freqs,xticks,yticks,map,Tlimit,Flimit,NICE)
+function plotMap(time , freqs , xticks , yticks , map , Tlimit , Flimit , NICE)
 % plot t-f map
 % Copyright Konrad Kwaskiewicz, 2012
+
+
+
 if isempty(xticks)
     xticks=[time(1) time(end/2) time(end)];
 end

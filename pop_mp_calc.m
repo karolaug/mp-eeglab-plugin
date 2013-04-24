@@ -36,7 +36,7 @@ uilist = { ...
 
 
 
-%try
+try
     params.channel_nr = str2num(params.channel_nr);
     params.epoch_nr   = str2num(params.epoch_nr);
     params.dE         = str2num(params.dE);
@@ -74,9 +74,9 @@ uilist = { ...
     end
     disp 'Done'
     
-%catch
-%    disp 'Aborted by user'
-%end
+catch
+    disp 'Aborted by user'
+end
 
 end
 

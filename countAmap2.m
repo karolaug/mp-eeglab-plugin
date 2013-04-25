@@ -40,7 +40,9 @@ for ii = 1:size(Y.amplitudes,1)
     realYwin = atom.*window2smooth;
     zz       = fft(realYwin);
     z        = abs(zz(1:floor(length(zz)/2+1) ));
+    
     z        = halfWidthGauss(z);
+    
     z        = resample(z,finalFlen,length(z));
     z        = z/max(z);
     envelope = resample(env,finalTlen,length(env));
@@ -52,15 +54,21 @@ end
 function y=halfWidthGauss(z)
 
 [mz mzi]=max(z);
+
 id=find(z(1:mzi)-0.5*mz<0);
 if isempty(id)
     L=mzi;%-id(end);
 else
     L=mzi-id(end);
 end
+
 id=find(z(mzi:end)-0.5*mz<0);
-R=id(1);
-% [ R L]
+if isempty(id)
+    R=z(end);
+else
+    R=id(1);
+end
+
 sigma=(L+R)/2/sqrt(log(4));
 t=1:length(z);
 y=mz*exp(-(t-mzi).^2/2/sigma^2);

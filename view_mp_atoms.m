@@ -218,7 +218,7 @@ function plot_original()
     global MPatomSettings;
     t  = EEG.book.epoch_labels(MPatomSettings.trialstag);
     ch = str2num(EEG.book.channel_labels{MPatomSettings.channelstag});
-    plot(EEG.data(ch,:,t),'b','Parent',MPatomSettings.originalaxis);
+    plot(MPatomSettings.time , EEG.data(ch,:,t),'b','Parent',MPatomSettings.originalaxis);
     title(MPatomSettings.originalaxis,'Original signal');
     MPatomSettings.yaxlimits=get(MPatomSettings.originalaxis,'YLim');
 end
@@ -227,7 +227,7 @@ function plot_reconstruct()
     global EEG;
     global MPatomSettings;
     X = squeeze(EEG.book.reconstruction(MPatomSettings.trialstag,MPatomSettings.channelstag,:,:));
-    plot(sum(real(X),1),'b','Parent',MPatomSettings.reconstructaxis);
+    plot(MPatomSettings.time , sum(real(X),1),'b','Parent',MPatomSettings.reconstructaxis);
     title(MPatomSettings.reconstructaxis,'Signal reconstruction');
     set(MPatomSettings.reconstructaxis,'YLim',MPatomSettings.yaxlimits);
 end
@@ -235,7 +235,7 @@ end
 function plot_atom()
     global EEG;
     global MPatomSettings;
-    plot(squeeze(real(EEG.book.reconstruction(MPatomSettings.trialstag,MPatomSettings.channelstag,MPatomSettings.atomstag,:))),'b','Parent',MPatomSettings.atomaxis);
+    plot(MPatomSettings.time , squeeze(real(EEG.book.reconstruction(MPatomSettings.trialstag,MPatomSettings.channelstag,MPatomSettings.atomstag,:))),'b','Parent',MPatomSettings.atomaxis);
     title(MPatomSettings.atomaxis,'Reconstructing functions');
     set(MPatomSettings.atomaxis,'YLim',MPatomSettings.yaxlimits);
     set(MPatomSettings.a(3),'String',num2str(MPatomSettings.atomstag));

@@ -13,6 +13,7 @@ if strcmp(map_string,'new_plot')
     MPmapSettings.atomstag = 1;
 
     MPmapSettings.color = [1 1 1];
+    MPmapSettings.time = [1:EEG.pnts] / EEG.srate;
     
     MPmapSettings.figure = figure('UserData', MPmapSettings,...
       'Color', MPmapSettings.color, 'Toolbar' , 'figure' , 'name', MPmapSettings.title,...
@@ -146,9 +147,8 @@ function refresh_signal()
     global MPmapSettings;
     global EEG;
     X = squeeze(EEG.book.reconstruction(MPmapSettings.trialstag,MPmapSettings.channelstag,:,:));
-    plot(sum(real(X),1),'b','Parent',MPmapSettings.signalaxis);
+    plot(MPmapSettings.time , sum(real(X),1),'b','Parent',MPmapSettings.signalaxis);
     title(MPmapSettings.signalaxis,'Signal reconstruction');
-    Xlim(MPmapSettings.signalaxis,[1 EEG.pnts]);
     
     set(MPmapSettings.e(3) ,'String',num2str(EEG.book.epoch_labels(MPmapSettings.trialstag)));
     set(MPmapSettings.ch(3),'String',num2str(EEG.book.channel_labels{MPmapSettings.channelstag}));

@@ -11,10 +11,10 @@
 %    but WITHOUT ANY WARRANTY; without even the implied warranty of
 %    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 %    GNU General Public License for more details.
-
+%
 %    You should have received a copy of the GNU General Public License
 %    along with this program.  If not, see <http://www.gnu.org/licenses/>.
-
+%
 %    Tomasz Spustek <tomasz@spustek.pl>
 %    Konrad Kwaśkiewicz <konrad.kwaskiewicz@gmail.com>
 %    Karol Auguštin <karol@augustin.pl>
@@ -154,9 +154,7 @@ elseif strcmp(map_string,'chan_step_left')
         refresh_signal();
     end
 end
-
 end
-
 
 
 function refresh_map()
@@ -172,8 +170,7 @@ function refresh_signal()
     global EEG;
     X = squeeze(EEG.book.reconstruction(MPmapSettings.trialstag,MPmapSettings.channelstag,:,:));
     plot(MPmapSettings.time , sum(real(X),1),'b','Parent',MPmapSettings.signalaxis);
-    title(MPmapSettings.signalaxis,'Signal reconstruction');
-    
+    title(MPmapSettings.signalaxis,'Signal reconstruction');    
     set(MPmapSettings.e(3) ,'String',num2str(EEG.book.epoch_labels(MPmapSettings.trialstag)));
     set(MPmapSettings.ch(3),'String',num2str(EEG.book.channel_labels{MPmapSettings.channelstag}));
 end

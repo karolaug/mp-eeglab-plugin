@@ -24,8 +24,6 @@
 
 function plotMap(time , freqs , xticks , yticks , map , Tlimit , Flimit , NICE)
 % plot t-f map
-% Copyright Konrad Kwaskiewicz, 2012
-
 global MPmapSettings;
 
 if isempty(xticks)
@@ -59,10 +57,7 @@ else
 
   view(2)
   shading interp
-  %shading flat
 end
-
-
 
 set(gca,'XTick',xticks)
 set(gca,'XTickLabel',num2cell(xticks*1e0))

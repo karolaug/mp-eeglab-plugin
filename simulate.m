@@ -25,10 +25,7 @@
 function [ALLEEG , EEG , CURRENTSET] = simulate(EEG, ALLEEG, CURRENTSET, name)
 
 signal = zeros(2,512,3);
-%gabor(sizeOfSignal,sampleFrequency,atomAmplitude,atomPosition,atomWidth,atomFrequency,atomPhase,atomType)
 
-
-%signal( channel , : , trial);
 signal(1,:,1) = gabor(512,128,12,128,0.8,15,0,'G') + gabor(512,128,12,384,0.8,30,0,'G');
 signal(1,:,2) = gabor(512,128,12,128,0.8,15,0,'G') + 0.10 * randn(1,512);
 signal(1,:,3) = gabor(512,128,12,128,0.8,15,0,'G') + 0.50 * randn(1,512);

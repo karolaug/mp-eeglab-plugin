@@ -11,10 +11,10 @@
 %    but WITHOUT ANY WARRANTY; without even the implied warranty of
 %    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 %    GNU General Public License for more details.
-
+%
 %    You should have received a copy of the GNU General Public License
 %    along with this program.  If not, see <http://www.gnu.org/licenses/>.
-
+%
 %    Tomasz Spustek <tomasz@spustek.pl>
 %    Konrad Kwaśkiewicz <konrad.kwaskiewicz@gmail.com>
 %    Karol Auguštin <karol@augustin.pl>
@@ -24,30 +24,22 @@
 
 function view_mp_atoms(check_string)
 
-
 global MPatomSettings;
 global EEG;
-
 
 if strcmp(check_string,'new_plot')
     MPatomSettings = [];
     MPatomSettings.title = 'Inspect signal reconstruction and single reconstructing atoms -- view_mp_atoms()';
     MPatomSettings.position = [50 50 800 500];
-
     MPatomSettings.trialstag = 1;
     MPatomSettings.channelstag = 1;
     MPatomSettings.atomstag = 1;
-
     MPatomSettings.color = [1 1 1];
-    
     MPatomSettings.time = [1:EEG.pnts] / EEG.srate;
-    
-    
     MPatomSettings.figure = figure('UserData', MPatomSettings,...
       'Color', MPatomSettings.color, 'Toolbar' , 'figure' , 'name', MPatomSettings.title,...
       'MenuBar','none','Position',MPatomSettings.position, ...
       'numbertitle', 'off', 'visible', 'on');
-
     % positions of controlls for epochs scrolling
     posepoch = zeros(4,4);
     posepoch(1,:) = [ 0.8500    0.8000    0.0300    0.0300 ]; % < - button
@@ -147,14 +139,10 @@ if strcmp(check_string,'new_plot')
         'Position', posatom(4,:), ...
         'Tag','atom_button_label',...
         'string','Atom');
-    
-    
     MPatomSettings.originalaxis = axes('outerposition',[.0  .7  .8  .3]);
         plot_original()
-        
     MPatomSettings.reconstructaxis = axes('outerposition',[.0  .4  .8  .3]);
         plot_reconstruct()
-        
     MPatomSettings.atomaxis = axes('outerposition',[.0  .1  .8  .3]);
         plot_atom()       
         
@@ -208,7 +196,6 @@ elseif strcmp(check_string, 'chan_step_right')
         disp 'Displaying next channel'
         MPatomSettings.channelstag = MPatomSettings.channelstag + 1;
         set(MPatomSettings.ch(3),'String',num2str(EEG.book.channel_labels{MPatomSettings.channelstag}));  
-        
         if any(EEG.book.reconstruction(MPatomSettings.trialstag,MPatomSettings.channelstag,MPatomSettings.atomstag+1,:)~=0) == 0 
             MPatomSettings.atomstag = 1;
         end
@@ -233,9 +220,7 @@ elseif strcmp(check_string, 'atom_step_right')
         plot_atom();
     end
 end
-
 end
-
 
 function plot_original()
     global EEG;
@@ -246,7 +231,6 @@ function plot_original()
     title(MPatomSettings.originalaxis,'Original signal');
     MPatomSettings.yaxlimits=get(MPatomSettings.originalaxis,'YLim');
 end
-
 function plot_reconstruct()
     global EEG;
     global MPatomSettings;
@@ -255,7 +239,6 @@ function plot_reconstruct()
     title(MPatomSettings.reconstructaxis,'Signal reconstruction');
     set(MPatomSettings.reconstructaxis,'YLim',MPatomSettings.yaxlimits);
 end
-
 function plot_atom()
     global EEG;
     global MPatomSettings;

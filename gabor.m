@@ -11,10 +11,10 @@
 %    but WITHOUT ANY WARRANTY; without even the implied warranty of
 %    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 %    GNU General Public License for more details.
-
+%
 %    You should have received a copy of the GNU General Public License
 %    along with this program.  If not, see <http://www.gnu.org/licenses/>.
-
+%
 %    Tomasz Spustek <tomasz@spustek.pl>
 %    Konrad Kwaśkiewicz <konrad.kwaskiewicz@gmail.com>
 %    Karol Auguštin <karol@augustin.pl>
@@ -23,16 +23,14 @@
 
 
 function [signal, time] = gabor(sizeOfSignal,sampleFrequency,atomAmplitude,atomPosition,atomWidth,atomFrequency,atomPhase,atomType)
-
 % the input parameters of the function should be specified in SI units:
 % sampleFrequency in Hz
 % width in sec.
-% atomPosition in sec.    (TO JEST AKURAT W PUNKTACH, NIE W SEKUNDACH)
+% atomPosition in points
 % atomAmplitude in uV, V etc (depends on the signal)
-% atomPhase in radians (?)
+% atomPhase in radians
 
 time = 0:1:sizeOfSignal-1;
-%parameters in samples (points):
 position  = atomPosition;
 width     = atomWidth*sampleFrequency;
 frequency = (atomFrequency/(0.5*sampleFrequency))*pi;
@@ -47,4 +45,3 @@ elseif atomType=='N'
 elseif atomType=='G'
     signal = atomAmplitude*exp(-pi.*((time-position)/width).^2).*cos(frequency.*(time-position) + atomPhase);
 end
-

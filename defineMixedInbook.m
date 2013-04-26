@@ -11,10 +11,10 @@
 %    but WITHOUT ANY WARRANTY; without even the implied warranty of
 %    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 %    GNU General Public License for more details.
-
+%
 %    You should have received a copy of the GNU General Public License
 %    along with this program.  If not, see <http://www.gnu.org/licenses/>.
-
+%
 %    Tomasz Spustek <tomasz@spustek.pl>
 %    Konrad Kwaśkiewicz <konrad.kwaskiewicz@gmail.com>
 %    Karol Auguštin <karol@augustin.pl>
@@ -24,14 +24,11 @@
 
 function [book] = defineMixedInbook(param,time)
 % prepare book of envelopes according to params
-% Copyright Konrad Kwaskiewicz, 2012
+
 t=1:(length(time)*3);
 minS=param(1);
 maxS=param(2);
 dE=param(3);
-
-% szacuj�co ile ma skaka� sigma dla tej samej pozycji, �eby r�nica energii
-% by�a ustalona
 
 sig_start=(minS+maxS)/2;
 gc=gaborEnvelope(sig_start,t);
@@ -49,13 +46,13 @@ breakV=maxS*sqrt(par_sig);
 
 %generate symmetric and asymmetric atom envelopes for all time scales
 while csigma<breakV
-    [tmp_env,p,k,sr]=gaborEnvelope(csigma,t);% obwiednia pocz�tek i koniec, �rodek
+    [tmp_env,p,k,sr]=gaborEnvelope(csigma,t);
     book(iter).atom=tmp_env(p:k);
     book(iter).skok=minPosEnerg(book(iter).atom,dE);
-    book(iter).skok=max([1 book(iter).skok]);%window shift
+    book(iter).skok=max([1 book(iter).skok]);
     book(iter).sigma=csigma;
     book(iter).sr=round(sr);
-    book(iter).type=1;% 1 - gabor atom
+    book(iter).type=1;
     book(iter).decay=0;
     iter=iter+1;
 
@@ -76,32 +73,30 @@ sig_start2=(minS+maxS)/2;
 gc=gabor8Envelope(sig_start2,t);
 sig_stop2=fminsearch(@(x) minSigEnerg8(x,gc,dE,t),sig_start2);
 par_sig=sig_stop2/sig_start2;
+
 if par_sig<1
     par_sig=1/par_sig;
 end
-csigma=minS;
 
-breakV=maxS*sqrt(par_sig); % stopping criterion
+csigma=minS;
+% stopping criterion
+breakV=maxS*sqrt(par_sig);
+
 while csigma<breakV
-    [tmp_env,p,k,sr]=gabor8Envelope(csigma,t);% obwiednia pocz�tek i koniec, �rodek
+    [tmp_env,p,k,sr]=gabor8Envelope(csigma,t);
     book(iter).atom=tmp_env(p:k);
     book(iter).skok=minPosEnerg8(book(iter).atom,dE);
     book(iter).skok=max([1 book(iter).skok]);
     book(iter).sigma=csigma;
     book(iter).sr=round(sr);
-    book(iter).type=3;% 8 - gabor z pot?g?
+    book(iter).type=3;
     book(iter).decay=0;
     csigma=csigma*par_sig;    
     iter=iter+1;
 end
 
 
-
-
-
-
 function [env,p,k,sr]=gaborEnvelope(sig,t)
- 
 eps=1e-4;
 mi=t(end)/2;
 x=(mi-t)/sig;
@@ -115,14 +110,12 @@ return
 
 
 function err=minSigEnerg(sig_x,gc,dE,t)
-
 gx=gaborEnvelope(sig_x,t);
 err=abs(1-dE-dot(gx,gc));
 return
 
 
 function skok=minPosEnerg(gc,dE)
-
 xc=abs(1-dE-xcorr(gc,gc));
 [~,mind]=min(xc);
 mind=mind(1);
@@ -131,7 +124,6 @@ return
 
 
 function [y,p,k,sr]=gabor2asymEps(alfa,mi,dec,x)
-
 eps=1e-4;
 tmp_x_mi=x-mi;
 y=exp((-alfa*( tmp_x_mi ).^2 )./ (1+ dec*( tmp_x_mi ) .* (atan(1e16*(tmp_x_mi))+pi/2)/pi));
@@ -143,7 +135,6 @@ y=y/norm(y);
 return
 
 function [env,p,k,sr]=gabor8Envelope(sig,t)
-
 eps=1e-4;
 mi=t(end)/2;
 x=(mi-t)/sig;
@@ -156,14 +147,12 @@ env=y/norm(y);
 return
 
 function err=minSigEnerg8(sig_x,gc,dE,t)
-
 gx=gabor8Envelope(sig_x,t);
 err=abs(1-dE-dot(gx,gc));
 return
 
 
 function skok=minPosEnerg8(gc,dE)
-
 xc=abs(1-dE-xcorr(gc,gc));
 [~,mind]=min(xc);
 mind=mind(1);

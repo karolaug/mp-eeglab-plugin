@@ -11,10 +11,10 @@
 %    but WITHOUT ANY WARRANTY; without even the implied warranty of
 %    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 %    GNU General Public License for more details.
-
+%
 %    You should have received a copy of the GNU General Public License
 %    along with this program.  If not, see <http://www.gnu.org/licenses/>.
-
+%
 %    Tomasz Spustek <tomasz@spustek.pl>
 %    Konrad Kwaśkiewicz <konrad.kwaskiewicz@gmail.com>
 %    Karol Auguštin <karol@augustin.pl>
@@ -46,7 +46,6 @@ else
         end
     end
     
-    
     reconstructing_array = zeros( size(out_book,2) , size(out_book(1).reconstruction,2));
     time_array           = zeros( size(out_book,2) , max_time_size);
     envelope_array       = zeros( size(out_book,2) , size(out_book(1).envelope,2));
@@ -67,7 +66,6 @@ else
     end
     
     disp 'Reconstructing_array - done';
-    
     parameters_array = [];
     parameters_array.envelopes   = envelope_array;
     parameters_array.times       = time_array;
@@ -75,10 +73,7 @@ else
     parameters_array.frequencies = frequency_array;
     parameters_array.mius        = miu_array;
     parameters_array.sigmas      = sigma_array;
-    
     disp 'Parameters array - done';
     
 end
-
-
 end

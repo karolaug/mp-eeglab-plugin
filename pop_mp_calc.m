@@ -21,15 +21,13 @@
 
 
 
-
-% pop_mp_calc() - Returns parameterised signal and plots time-frequency map
+function EEG = pop_mp_calc(EEG)
+% Returns parameterised signal and plots time-frequency map
 % of it.
 %
 % Usage:
 %   >> pop_mp_calc(EEG);          % pop_up window
 %   >> mp_calc(EEG,channel_nr,epoch_nr,minS,maxS,dE,energy,iter,nfft);
-
-function EEG = pop_mp_calc(EEG)
 
 title_string = 'Parameterise a signal in time-frequency domain by means of MP procedure -- pop_mp_calc()';
 geometry = { 1 [1 1] [1 1] 1 1 [1 1] [1 1] [1 1] 1 1 [1 1] [1 1] [1 1] };
@@ -58,8 +56,6 @@ uilist = { ...
 
 [~, ~, err params] = inputgui( 'geometry', geometry, 'uilist', uilist, 'helpcom', 'pophelp(''pop_mp_calc'');', 'title' , title_string);
 
-
-
 try
     params.channel_nr = str2num(params.channel_nr);
     params.epoch_nr   = str2num(params.epoch_nr);
@@ -72,10 +68,9 @@ try
     
     try
         EEG = rmfield(EEG , 'book');
-    catch
-        
+    catch        
     end
-    
+
     EEG.book.reconstruction = zeros(size(params.epoch_nr,2),size(params.channel_nr,2),params.iter,size(EEG.data,2));
     for ch = 1:1:size(params.channel_nr,2)
         for ep = 1:1:size(params.epoch_nr,2)
@@ -102,8 +97,4 @@ try
 catch
     disp 'Aborted by user'
 end
-
 end
-
-
- 

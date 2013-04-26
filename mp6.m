@@ -11,10 +11,10 @@
 %    but WITHOUT ANY WARRANTY; without even the implied warranty of
 %    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 %    GNU General Public License for more details.
-
+%
 %    You should have received a copy of the GNU General Public License
 %    along with this program.  If not, see <http://www.gnu.org/licenses/>.
-
+%
 %    Tomasz Spustek <tomasz@spustek.pl>
 %    Konrad Kwaśkiewicz <konrad.kwaskiewicz@gmail.com>
 %    Karol Auguštin <karol@augustin.pl>
@@ -39,12 +39,9 @@ function [out_book, EE]=mp6(signal,envelope_book,MIN_FFT_N,max_iter,minEnergy,dE
 % out_book: t-f atoms parameters
 % EE: freaction of energy explained
 
-% Copyright Konrad Kwaskiewicz, 2012
-
 
 global restSIGNAL subMaxDot subMaxFreq env_part Giteracja
 Giteracja=0;
-
 PrzedM=[];
 PoM=[];
 
@@ -58,33 +55,27 @@ end
 
 signalRest=(signal);
 signalEnergy=Energy((signal));
-
-out_book=[];% indeks envelope_book, pozycja, częstość, rekonstrukcja
-
-
+out_book=[];
 siglen=length(signal);
 env_part=[];
 subMaxDot=[];
 subMaxFreq=[];
 iter=0;
-
 disp 'MP initialization - done';
 
 for ii=1:length(envelope_book)
-    %[ii length(envelope_book)]
     tmp_step=envelope_book(ii).skok;
     tmp_atom=envelope_book(ii).atom;
     tmp_sr=envelope_book(ii).sr;
     
-    for jj=0:tmp_step:(siglen+tmp_step)% pozycja
-        tmp_p=max([(tmp_sr-jj) 1]);%początek wybranej części obwiedni atomu
+    for jj=0:tmp_step:(siglen+tmp_step)
+        tmp_p=max([(tmp_sr-jj) 1]);
         tmp_k=min([length(tmp_atom) tmp_sr+siglen-jj-1]);
        
         env_ind_tmp=tmp_p:tmp_k;
         ind1=env_ind_tmp;
         
         iter=iter+1;
-        % indeksy aktualnie rozwa?anego fragmentu sygna?u:
         tmp1=max([jj-tmp_sr 1]);
         tmp2=tmp1+(tmp_k-tmp_p);
         tmp_ind=tmp1:tmp2;
@@ -96,7 +87,6 @@ for ii=1:length(envelope_book)
         env_part(iter).envelope=tmp_atom(ind1)/norm(tmp_atom(ind1));
         env_part(iter).time=tmp_ind;
         env_part(iter).sigma=envelope_book(ii).sigma;
-        % dodatkowe 2 zmienne wzbogaconego s�ownika
         env_part(iter).type=envelope_book(ii).type;
         env_part(iter).decay=envelope_book(ii).decay;
         
@@ -116,7 +106,7 @@ for ii=1:length(envelope_book)
 end
 
 
-ii=1;%pierwsze maksimum
+ii=1;
 absDOT=abs(subMaxDot);
 [~, mmaxInd] = max(absDOT);
 mmax=subMaxDot(mmaxInd);
@@ -124,7 +114,7 @@ TIME=(1:length(env_part(mmaxInd).time))-1;
 out_book(ii).time=env_part(mmaxInd).time;
 out_book(ii).oscilation=subMaxFreq(mmaxInd);
 out_book(ii).amplitude=mmax;
-out_book(ii).sigma=mmax;% do ew implementacji
+out_book(ii).sigma=mmax;
 out_book(ii).envelope=zeros(1,siglen);
 out_book(ii).envelope(out_book(ii).time)=env_part(mmaxInd).envelope;
 out_book(ii).reconstruction=zeros(1,siglen);
@@ -139,10 +129,8 @@ if GRAD_ON,
     mi0=env_part(mmaxInd).time(mi_tmp);
     sigma0=env_part(mmaxInd).sigma;
     
-    %% brakuje zmiennej "TYP" aby odpala� odpowiednie!
     [bestOmega bestAmpl bestEnv bestReconstr miOut sigmaOut]=fitBestAtomGrad((mmax),mi0,sigma0,subMaxFreq(mmaxInd),env_part(mmaxInd).decay,signalRest,env_part(mmaxInd).time(1),env_part(mmaxInd).type);
     if abs(bestAmpl)>abs(mmax)
-        %         out_book(ii).time=bestTime;
         out_book(ii).oscilation=bestOmega;
         out_book(ii).amplitude=bestAmpl;
         out_book(ii).envelope=bestEnv;
@@ -151,50 +139,24 @@ if GRAD_ON,
         out_book(ii).sigma=sigmaOut;
         PoM(length(PoM))=abs(out_book(ii).amplitude);
     end
-    
-%     % ploting reconstruction
-%     subplot(2,1,1)
-%     plot(real(signalRest))
-%     hold on
-%     plot(real(out_book(ii).reconstruction),'r','linewidth',2)
-%     hold off
-% 
-%     title(['Signal and selected atom at iteration:  ', num2str(ii)])
-%     
-%     subplot( 2,1,2)
-%     plot(real(signalRest))
-%     hold on
-%     plot(real(out_book(ii).reconstruction),'r','linewidth',2)
-%     hold off
-%     title(['ZOOM', ' freq ' num2str(out_book(ii).oscilation/2/pi*Fs)])
-%     xlim([out_book(ii).time(1) out_book(ii).time(end)])
-%     drawnow
 end
-
 
 minEnergy=minEnergy-dE*dot(out_book(ii).reconstruction,out_book(ii).reconstruction)/dot(signalRest,signalRest);
 signalRest=signalRest-out_book(ii).reconstruction;
-
 restSIGNAL=signalRest;
-
 EE(ii)=1-( Energy(signalRest) )/signalEnergy;
 disp(['iteration ', num2str(ii), ', Energy explained: ',num2str(EE(ii))  ])
 if EE(ii) >minEnergy
     return
 end
-
 disp 'First iteration - done';
 
 for ii=2:max_iter
-    
     calcDOT(envelope_book,MIN_FFT_N);
     absDOT=abs(subMaxDot);
     [~, mmaxInd] = max(absDOT);
     mmax=subMaxDot(mmaxInd);
-    
     TIME=(1:length(env_part(mmaxInd).time))-1;
-    
-    % uzupełnienie atomu zwycięzcy!
     out_book(ii).time=env_part(mmaxInd).time;
     out_book(ii).oscilation=subMaxFreq(mmaxInd);
     out_book(ii).amplitude=mmax;
@@ -203,10 +165,8 @@ for ii=2:max_iter
     out_book(ii).envelope(out_book(ii).time)=env_part(mmaxInd).envelope;
     out_book(ii).reconstruction=zeros(1,siglen);
     out_book(ii).reconstruction(out_book(ii).time)=mmax*env_part(mmaxInd).envelope.*exp(1i*out_book(ii).oscilation*TIME);
-    
     PrzedM(1+length(PrzedM))=abs(mmax);
     PoM(1+length(PoM))=abs(mmax);%abs(out_book(ii).amplitude);
-    
 
     if GRAD_ON,
         [~, mi_tmp]=max(env_part(mmaxInd).envelope);
@@ -214,8 +174,6 @@ for ii=2:max_iter
         sigma0=env_part(mmaxInd).sigma;
         [bestOmega bestAmpl bestEnv bestReconstr miOut sigmaOut]=fitBestAtomGrad((mmax),mi0,sigma0,subMaxFreq(mmaxInd),env_part(mmaxInd).decay,signalRest,env_part(mmaxInd).time(1),env_part(mmaxInd).type);
         if abs(bestAmpl)>abs(mmax)
-            
-            %         out_book(ii).time=bestTime;
             out_book(ii).oscilation=bestOmega;
             out_book(ii).amplitude=bestAmpl;
             out_book(ii).envelope=bestEnv;
@@ -224,23 +182,6 @@ for ii=2:max_iter
             out_book(ii).sigma=sigmaOut;
             PoM(length(PoM))=abs(out_book(ii).amplitude);
         end
-        
-        % do some ploting
-%         subplot(2,1,1)
-%         plot(real(signalRest))
-%         hold on
-%         plot(real(out_book(ii).reconstruction),'r','linewidth',2)
-%         hold off
-%         title(['Signal and selected atom at iteration:  ', num2str(ii)])
-%         
-%         subplot( 2,1,2)
-%         plot(real(signalRest))
-%         hold on
-%         plot(real(out_book(ii).reconstruction),'r','linewidth',2)
-%         hold off
-%         title(['ZOOM', ' freq ' num2str(out_book(ii).oscilation/2/pi*Fs)])
-%         xlim([out_book(ii).time(1) out_book(ii).time(end)])
-%         drawnow; 
     end
     signalRest=signalRest-out_book(ii).reconstruction;
     restSIGNAL=signalRest;
@@ -252,8 +193,6 @@ for ii=2:max_iter
     end
     restSIGNAL=signalRest;
 end
-
-
 
 function E=Energy(signal)
 E=sum(signal.*conj(signal));

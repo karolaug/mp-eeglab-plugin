@@ -138,7 +138,7 @@ end
 function refresh_map()
     global MPmapSettings;
     global EEG;
-    [time , freqs , map] = countAmap2(EEG.book , 1:EEG.pnts , EEG.srate , MPmapSettings.trialstag , MPmapSettings.channelstag);
+    [time , freqs , map] = countAmap(EEG.book , 1:EEG.pnts , EEG.srate , MPmapSettings.trialstag , MPmapSettings.channelstag);
     plotMap(time,freqs,[],[],abs((map)),[],[0 EEG.srate/2],1);
     title(MPmapSettings.mapaxis , 'Time - Frequency map');
 end

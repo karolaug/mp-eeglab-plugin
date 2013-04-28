@@ -45,7 +45,7 @@ end
 
 if NICE==1
     imagesc(time,freqs,map,'Parent',MPmapSettings.mapaxis);
-    set(gca,'YDir','default')
+    set(MPmapSettings.mapaxis,'YDir','normal')
 else
 
   surf(time,freqs,map);

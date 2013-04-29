@@ -166,8 +166,10 @@ function refresh_map()
     global MPmapSettings;
     global EEG;
     [time , freqs , map] = countAmap(EEG.book , 1:EEG.pnts , EEG.srate , MPmapSettings.trialstag , MPmapSettings.channelstag);
-    plotMap(time,freqs,[],[],abs((map)),[],[0 EEG.srate/2],1);
+    plotMap(time,freqs, time(1):0.5:time(end) , freqs(1):5:freqs(end) ,abs((map)),[],[0 EEG.srate/2],1);
     title(MPmapSettings.mapaxis , 'Time - Frequency map');
+    %xlabel(MPmapSettings.mapaxis , 'Time [s]');
+    ylabel(MPmapSettings.mapaxis , 'Frequency [Hz]');
 end
 
 function refresh_signal()
@@ -175,7 +177,9 @@ function refresh_signal()
     global EEG;
     X = squeeze(EEG.book.reconstruction(MPmapSettings.trialstag,MPmapSettings.channelstag,:,:));
     plot(MPmapSettings.time , sum(real(X),1),'b','Parent',MPmapSettings.signalaxis);
-    title(MPmapSettings.signalaxis,'Signal reconstruction');    
+    title(MPmapSettings.signalaxis,'Signal reconstruction');
+    xlabel(MPmapSettings.signalaxis , 'Time [s]');
+    ylabel(MPmapSettings.signalaxis , 'Amplitude');
     set(MPmapSettings.e(3) ,'String',num2str(EEG.book.epoch_labels(MPmapSettings.trialstag)));
     set(MPmapSettings.ch(3),'String',num2str(EEG.book.channel_labels{MPmapSettings.channelstag}));
 end

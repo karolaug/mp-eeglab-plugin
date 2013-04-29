@@ -96,10 +96,10 @@ try
     
 catch ME1
 idSegLast = regexp(ME1.identifier, '(?<=:)\w+$', 'match');
-if strcmp(idSegLast, 'OutOfMemoryError')
-throw(ME1)
+if strcmp(idSegLast, 'nonStrucReference')
+    disp 'Aborted by user'
 else
-disp 'Aborted by user'
+    throw(ME1);
 
 end
 end

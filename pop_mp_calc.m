@@ -94,7 +94,12 @@ try
     end
     disp 'Done'
     
-catch
-    disp 'Aborted by user'
+catch ME1
+idSegLast = regexp(ME1.identifier, '(?<=:)\w+$', 'match');
+if strcmp(idSegLast, 'OutOfMemoryError')
+throw(ME1)
+else
+disp 'Aborted by user'
+
 end
 end

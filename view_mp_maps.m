@@ -28,6 +28,11 @@ global MPmapSettings;
 global EEG;
 
 if strcmp(map_string,'new_plot')
+    
+    if ~isfield(EEG, 'book') || isempty(EEG.book)
+        throw(MException('MatchingPursuit:view_mp_maps','You should calculate MP first.'));
+    end
+    
     MPmapSettings = [];
     MPmapSettings.title = 'Inspect time - frequency maps -- view_mp_maps()';
     MPmapSettings.position = [50 50 800 500];

@@ -28,6 +28,11 @@ global MPatomSettings;
 global EEG;
 
 if strcmp(check_string,'new_plot')
+    
+    if ~isfield(EEG, 'book') || isempty(EEG.book)
+        throw(MException('MatchingPursuit:view_mp_atoms','You should calculate MP first.'));
+    end
+    
     MPatomSettings = [];
     MPatomSettings.title = 'Inspect signal reconstruction and single reconstructing atoms -- view_mp_atoms()';
     MPatomSettings.position = [50 50 800 500];

@@ -1,4 +1,4 @@
-%    MP MATLAB plugin
+%    MP EEGLAB plugin
 %
 %    Copyright (C) 2013 Tomasz Spustek, Konrad Kwaśkiewicz, Karol Auguštin
 %
@@ -19,20 +19,55 @@
 %    Konrad Kwaśkiewicz <konrad.kwaskiewicz@gmail.com>
 %    Karol Auguštin <karol@augustin.pl>
 
-
+------------------------------------------------------------------------------------------------------------------------
 1. Authors and copyrights
-This EEGLAB plugin was written by ... and published under the therms of the GNU General Public License 3.
 
+This EEGLAB plugin was written by Tomasz Spustek, Konrad Kwaśkiewicz, Karol Auguštin and published under the terms
+of the GNU General Public License 3.
+
+
+------------------------------------------------------------------------------------------------------------------------
 2. Appliance
-This software is designed to ... at the Faculty of Physics, University of Warsaw.
 
+This software implements matching pursuit algorithm to be used in data analysis under EEGLAB toolbox. Program allows a
+user to perform calculations and visualize the results. 
+
+------------------------------------------------------------------------------------------------------------------------
 3. Usage
-To use this software you need ...
-...
-...
 
+To use this software you need:
+- Matlab, version 2011a or newer
+- Eeglab, version 11_0_4_3b or newer
+
+To install this plugin you need to place its entire directory inside the eeglab-directory/plugins/,
+where eeglab-directory is a directory in which your eeglab is located.
+
+
+------------------------------------------------------------------------------------------------------------------------
 4. Functionalities
 
+After installation you should be able to locate this plugin in the eeglab main menu under Tools > Matching Pursuit analysis.
+This software consists of three direct functionalities:
 
+- Calculate MP (mp_calc.m) - carry out the Matching Pursuit procedure and gives EEG.book structure as an output.
+Requires several parameters as an input (check doc string for details). This procedure is also accessible by pop_mp_calc.m - recommended.
+
+- View time-frequency maps (view_mp_maps.m) - plots reconstruction of a given signal (by means of functions from MP dictionary)
+and its representation in time-frequency domain. Requires EEG.book structure.
+
+- Inspect resulting decomposition (view_mp_atoms.m) - plots comparison of original signal and its reconstruction. Requires
+EEG.book structure.
+
+
+------------------------------------------------------------------------------------------------------------------------
 5. Matching Pursuit Algorithm
 
+The Matching Pursuit algorithm (MP), first proposed by Mallat and Zhang (1993), decomposes a signal into a linear
+combination of functions selected form a predefined set of function — the dictionary D. The dictionary is
+usually constructed from well behaving functions (well localized in time-frequency space), and usually is
+redundant as compared to a base spanning the signal space. MP has the desired property of explaining
+the signal in terms of time-frequency localized structures, and due to the redundancy of the dictionary,
+the explanation is very flexible.
+
+More information about MP method could be find:
+http://brain.fuw.edu.pl/~durka/ksiazki/UNI.html

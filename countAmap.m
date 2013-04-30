@@ -78,7 +78,7 @@ end
 
 id=find(z(mzi:end)-0.5*mz<0);
 if isempty(id)
-    R=z(end);
+    R=size(z,2);
 else
     R=id(1);
 end

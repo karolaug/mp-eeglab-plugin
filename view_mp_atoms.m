@@ -111,12 +111,68 @@ if strcmp(check_string,'new_plot')
         'Position', poschan(4,:), ...
         'Tag','channel_button_label',...
         'string','Channel');
+    % positions of a frame with parameters of atoms
+    posframe = zeros(1,4);
+    posframe(1,:) = [ 0.7500    0.1000    0.2300    0.4400 ]; % [] - frame
+    posparam = zeros(6,4);
+    posparam(1,:) = [ 0.1000    0.9000    0.8000    0.1000 ]; % - amplitude label
+    posparam(2,:) = [ 0.2000    0.7500    0.7000    0.1000 ]; % - amplitude text
+    posparam(3,:) = [ 0.1000    0.6000    0.8000    0.1000 ]; % - width label
+    posparam(4,:) = [ 0.2000    0.4500    0.7000    0.1000 ]; % - width text
+    posparam(5,:) = [ 0.1000    0.3000    0.8000    0.1000 ]; % - frequency label
+    posparam(6,:) = [ 0.2000    0.1500    0.7000    0.1000 ]; % - frequency text
+    MPatomSettings.f = zeros(7,1);
+    MPatomSettings.f(1) = uipanel('Title','Atom parameters:','FontSize',12,...
+             'BackgroundColor','white',...
+             'Position',posframe(1,:));       
+    MPatomSettings.f(2) = uicontrol('Parent',MPatomSettings.f(1), ...
+        'Style','text', ...
+        'Units', 'normalized', ...
+        'BackgroundColor','white',...
+        'Position', posparam(1,:), ...
+        'Tag','atom_amplitude_label',...
+        'string','Amplitude:');
+    MPatomSettings.f(3) = uicontrol('Parent',MPatomSettings.f(1), ...
+        'Style','text', ...
+        'Units', 'normalized', ...
+        'BackgroundColor','white',...
+        'Position', posparam(2,:), ...
+        'Tag','atom_amplitude_text',...
+        'string','p_t');
+    MPatomSettings.f(4) = uicontrol('Parent',MPatomSettings.f(1), ...
+        'Style','text', ...
+        'Units', 'normalized', ...
+        'BackgroundColor','white',...
+        'Position', posparam(3,:), ...
+        'Tag','atom_width_label',...
+        'string','Width:');
+    MPatomSettings.f(5) = uicontrol('Parent',MPatomSettings.f(1), ...
+        'Style','text', ...
+        'Units', 'normalized', ...
+        'BackgroundColor','white',...
+        'Position', posparam(4,:), ...
+        'Tag','atom_width_text',...
+        'string','w_t');
+    MPatomSettings.f(6) = uicontrol('Parent',MPatomSettings.f(1), ...
+        'Style','text', ...
+        'Units', 'normalized', ...
+        'BackgroundColor','white',...
+        'Position', posparam(5,:), ...
+        'Tag','atom_frequency_label',...
+        'string','Frequency:');
+    MPatomSettings.f(7) = uicontrol('Parent',MPatomSettings.f(1), ...
+        'Style','text', ...
+        'Units', 'normalized', ...
+        'BackgroundColor','white',...
+        'Position', posparam(6,:), ...
+        'Tag','atom_frequency_text',...
+        'string','f_t');
     % positions of controlls for atoms scrolling
     posatom = zeros(4,4);
-    posatom(1,:) = [ 0.8500    0.2000    0.0300    0.0300 ]; % < - button
-    posatom(3,:) = [ 0.8900    0.2000    0.0500    0.0300 ]; % [ - text window
-    posatom(2,:) = [ 0.9500    0.2000    0.0300    0.0300 ]; % > - button
-    posatom(4,:) = [ 0.8500    0.2500    0.1000    0.0300 ]; % _ - label
+    posatom(1,:) = [ 0.8500    0.5500    0.0300    0.0300 ]; % < - button
+    posatom(3,:) = [ 0.8900    0.5500    0.0500    0.0300 ]; % [ - text window
+    posatom(2,:) = [ 0.9500    0.5500    0.0300    0.0300 ]; % > - button
+    posatom(4,:) = [ 0.8500    0.6000    0.1000    0.0300 ]; % _ - label
     % creation of atom-controlls:
     MPatomSettings.a = zeros(4,1);
     MPatomSettings.a(1) = uicontrol('Parent',MPatomSettings.figure, ...
@@ -145,11 +201,12 @@ if strcmp(check_string,'new_plot')
         'Tag','atom_button_label',...
         'string','Atom');
     MPatomSettings.originalaxis = axes('outerposition',[.0  .7  .8  .3]);
-        plot_original()
+        plot_original();
     MPatomSettings.reconstructaxis = axes('outerposition',[.0  .4  .8  .3]);
-        plot_reconstruct()
+        plot_reconstruct();
     MPatomSettings.atomaxis = axes('outerposition',[.0  .1  .8  .3]);
-        plot_atom()       
+        plot_atom();
+        refresh_atom_parameters();
         
 elseif strcmp(check_string, 'epoch_step_left')
     if MPatomSettings.trialstag == 1
@@ -164,7 +221,8 @@ elseif strcmp(check_string, 'epoch_step_left')
         end
         plot_original();
         plot_reconstruct();
-        plot_atom(); 
+        plot_atom();
+        refresh_atom_parameters();
     end 
 elseif strcmp(check_string, 'epoch_step_right')
     if MPatomSettings.trialstag == size(EEG.book.epoch_labels,2)
@@ -178,7 +236,8 @@ elseif strcmp(check_string, 'epoch_step_right')
         end
         plot_original();
         plot_reconstruct();
-        plot_atom();     
+        plot_atom();
+        refresh_atom_parameters();
     end  
 elseif strcmp(check_string, 'chan_step_left')
     if MPatomSettings.channelstag == 1
@@ -192,7 +251,8 @@ elseif strcmp(check_string, 'chan_step_left')
         end
         plot_original();
         plot_reconstruct();
-        plot_atom();     
+        plot_atom();
+        refresh_atom_parameters();
     end    
 elseif strcmp(check_string, 'chan_step_right')
     if MPatomSettings.channelstag == size(EEG.book.channel_labels,2)
@@ -207,6 +267,7 @@ elseif strcmp(check_string, 'chan_step_right')
         plot_original();
         plot_reconstruct();
         plot_atom();
+        refresh_atom_parameters();
     end
 elseif strcmp(check_string, 'atom_step_left')
     if MPatomSettings.atomstag == 1
@@ -215,6 +276,7 @@ elseif strcmp(check_string, 'atom_step_left')
         disp 'Displaying previous atom'
         MPatomSettings.atomstag = MPatomSettings.atomstag - 1;
         plot_atom();
+        refresh_atom_parameters();
     end
 elseif strcmp(check_string, 'atom_step_right')
     if MPatomSettings.atomstag == size(EEG.book.reconstruction(MPatomSettings.trialstag,MPatomSettings.channelstag,:,:),3) || any(EEG.book.reconstruction(MPatomSettings.trialstag,MPatomSettings.channelstag,MPatomSettings.atomstag+1,:)~=0) == 0
@@ -223,6 +285,7 @@ elseif strcmp(check_string, 'atom_step_right')
         disp 'Displaying next atom'
         MPatomSettings.atomstag = MPatomSettings.atomstag + 1;
         plot_atom();
+        refresh_atom_parameters();
     end
 end
 end
@@ -232,23 +295,44 @@ function plot_original()
     global MPatomSettings;
     t  = EEG.book.epoch_labels(MPatomSettings.trialstag);
     ch = str2num(EEG.book.channel_labels{MPatomSettings.channelstag});
-    plot(MPatomSettings.time , EEG.data(ch,:,t),'b','Parent',MPatomSettings.originalaxis);
+    plot(MPatomSettings.time , EEG.data(ch,:,t),'k','Parent',MPatomSettings.originalaxis);
     title(MPatomSettings.originalaxis,'Original signal');
     MPatomSettings.yaxlimits=get(MPatomSettings.originalaxis,'YLim');
+    ylabel(MPatomSettings.originalaxis , 'Amplitude');
 end
 function plot_reconstruct()
-    global EEG;
     global MPatomSettings;
+    global EEG;
     X = squeeze(EEG.book.reconstruction(MPatomSettings.trialstag,MPatomSettings.channelstag,:,:));
-    plot(MPatomSettings.time , sum(real(X),1),'b','Parent',MPatomSettings.reconstructaxis);
+    plot(MPatomSettings.time , sum(real(X),1),'k','Parent',MPatomSettings.reconstructaxis);
     title(MPatomSettings.reconstructaxis,'Signal reconstruction');
     set(MPatomSettings.reconstructaxis,'YLim',MPatomSettings.yaxlimits);
+    ylabel(MPatomSettings.reconstructaxis , 'Amplitude');
 end
 function plot_atom()
-    global EEG;
     global MPatomSettings;
-    plot(MPatomSettings.time , squeeze(real(EEG.book.reconstruction(MPatomSettings.trialstag,MPatomSettings.channelstag,MPatomSettings.atomstag,:))),'b','Parent',MPatomSettings.atomaxis);
+    global EEG;
+    plot(MPatomSettings.time , squeeze(real(EEG.book.reconstruction(MPatomSettings.trialstag,MPatomSettings.channelstag,MPatomSettings.atomstag,:))),'k','Parent',MPatomSettings.atomaxis);
     title(MPatomSettings.atomaxis,'Reconstructing functions');
     set(MPatomSettings.atomaxis,'YLim',MPatomSettings.yaxlimits);
     set(MPatomSettings.a(3),'String',num2str(MPatomSettings.atomstag));
+    ylabel(MPatomSettings.atomaxis , 'Amplitude');
+    xlabel(MPatomSettings.atomaxis , 'Time [s]');
+end
+
+function refresh_atom_parameters()
+    global MPatomSettings;
+    global EEG;
+    % f(3)-pos f(5)-width f(7)-freq
+    
+    MPatomSettings.trialstag;
+    MPatomSettings.channelstag;
+    MPatomSettings.atomstag;
+    ampl = abs(EEG.book.parameters(MPatomSettings.trialstag,MPatomSettings.channelstag).amplitudes(MPatomSettings.atomstag));
+    env  = max(EEG.book.parameters(MPatomSettings.trialstag,MPatomSettings.channelstag).envelopes(MPatomSettings.atomstag,:));
+    set(MPatomSettings.f(3),'String',num2str(ampl*env));
+    width = 0;
+    set(MPatomSettings.f(5),'String',num2str(width));
+    freq = EEG.book.parameters(MPatomSettings.trialstag,MPatomSettings.channelstag).frequencies(MPatomSettings.atomstag);
+    set(MPatomSettings.f(7),'String',num2str(freq));
 end

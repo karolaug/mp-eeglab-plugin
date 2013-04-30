@@ -328,30 +328,10 @@ function refresh_atom_parameters()
     MPatomSettings.trialstag;
     MPatomSettings.channelstag;
     MPatomSettings.atomstag;
-    ampl = abs(EEG.book.parameters(MPatomSettings.trialstag,MPatomSettings.channelstag).amplitudes(MPatomSettings.atomstag));
-    env  = max(EEG.book.parameters(MPatomSettings.trialstag,MPatomSettings.channelstag).envelopes(MPatomSettings.atomstag,:));
-    set(MPatomSettings.f(3),'String',num2str(ampl*env));
-    width = find_width(EEG.book.parameters(MPatomSettings.trialstag,MPatomSettings.channelstag).envelopes(MPatomSettings.atomstag,:));
+    ampl = EEG.book.parameters(MPatomSettings.trialstag,MPatomSettings.channelstag).atomAmplitudes(MPatomSettings.atomstag);
+    set(MPatomSettings.f(3),'String',num2str(ampl));
+    width = EEG.book.parameters(MPatomSettings.trialstag,MPatomSettings.channelstag).widths(MPatomSettings.atomstag);
     set(MPatomSettings.f(5),'String',num2str(width));
     freq = EEG.book.parameters(MPatomSettings.trialstag,MPatomSettings.channelstag).frequencies(MPatomSettings.atomstag);
     set(MPatomSettings.f(7),'String',num2str(freq));
-end
-
-function width = find_width(signal)
-    [mz mzi]=max(signal);
-    
-    id=find(signal(1:mzi)-0.5*mz<0);
-    if isempty(id)
-        L = mzi;
-    else
-        L = mzi-id(end);
-    end
-
-    id=find(signal(mzi:end)-0.5*mz<0);
-    if isempty(id)
-        R = size(signal,2);
-    else
-        R = id(1);
-    end
-    width = R - L;
 end

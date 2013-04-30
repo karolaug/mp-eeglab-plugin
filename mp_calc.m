@@ -50,6 +50,8 @@ else
     time_array           = zeros( size(out_book,2) , max_time_size);
     envelope_array       = zeros( size(out_book,2) , size(out_book(1).envelope,2));
     amplitude_array      = zeros( size(out_book,2) , 1);
+    true_amplitude_array = zeros( size(out_book,2) , 1);
+    width_array          = zeros( size(out_book,2) , 1);
     frequency_array      = zeros( size(out_book,2) , 1);
     miu_array            = zeros( size(out_book,2) , 1);
     sigma_array          = zeros( size(out_book,2) , 1);
@@ -60,20 +62,31 @@ else
         X                               = out_book(1,i).time;
         time_array(i,1:size(X,2))       = X;
         amplitude_array(i)              = out_book(1,i).amplitude;
-        frequency_array(i)              = out_book(1,i).oscilation;
+        true_amplitude_array(i)         = abs(out_book(1,i).amplitude) * max(envelope_array(i,:));
+        frequency_array(i)              = EEG.srate * (out_book(1,i).oscilation / (2*pi));
         miu_array(i)                    = out_book(1,i).mi;
         sigma_array(i)                  = out_book(1,i).sigma;
+        
+        width_array(i)                  = find_width(envelope_array(i,:),EEG.srate);
     end
     
     disp 'Reconstructing_array - done';
     parameters_array = [];
-    parameters_array.envelopes   = envelope_array;
-    parameters_array.times       = time_array;
-    parameters_array.amplitudes  = amplitude_array;
-    parameters_array.frequencies = frequency_array;
-    parameters_array.mius        = miu_array;
-    parameters_array.sigmas      = sigma_array;
+    parameters_array.envelopes      = envelope_array;
+    parameters_array.times          = time_array;
+    parameters_array.amplitudes     = amplitude_array;
+    parameters_array.atomAmplitudes = true_amplitude_array;
+    parameters_array.frequencies    = frequency_array;
+    parameters_array.mius           = miu_array;
+    parameters_array.sigmas         = sigma_array;
+    parameters_array.widths         = width_array;
     disp 'Parameters array - done';
     
 end
+end
+
+function width = find_width(signal,srate)
+    [mz mzi]=max(signal);
+    
+    width = sum( signal >= 0.5 * mz) / srate;
 end

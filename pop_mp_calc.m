@@ -57,6 +57,11 @@ uilist = { ...
 [~, ~, err params] = inputgui( 'geometry', geometry, 'uilist', uilist, 'helpcom', 'pophelp(''pop_mp_calc'');', 'title' , title_string);
 
 try
+    EEG = rmfield(EEG , 'book');
+catch ME2
+end
+    
+try
     params.channel_nr = str2num(params.channel_nr);
     params.epoch_nr   = str2num(params.epoch_nr);
     params.dE         = str2num(params.dE);
@@ -66,10 +71,6 @@ try
     params.nfft       = str2num(params.nfft);
     params.energy     = str2num(params.energy);
     
-    try
-        EEG = rmfield(EEG , 'book');
-    catch        
-    end
 
     EEG.book.reconstruction = zeros(size(params.epoch_nr,2),size(params.channel_nr,2),params.iter,size(EEG.data,2));
     for ch = 1:1:size(params.channel_nr,2)

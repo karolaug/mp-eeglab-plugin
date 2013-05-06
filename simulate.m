@@ -58,7 +58,7 @@ X.data    = signal;
 % plot(X.data(2,:,3));
 
 
-[ALLEEG , EEG , CURRENTSET] = eeg_store(ALLEEG , X , CURRENTSET);
+[ALLEEG , EEG , CURRENTSET] = eeg_store(ALLEEG , X , CURRENTSET+1);
 %EEG = pop_saveset( EEG, 'filename',strcat(name,'.set'),'filepath','/home/praceeg_1/matlab/');
 %eeglab redraw;
 

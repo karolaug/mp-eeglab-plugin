@@ -46,7 +46,8 @@ siglen=length(time);
 time2len=round(siglen*0.05)*4;
 winRL=hann(time2len)';
 window2smooth=[winRL(1:end/2) ones(1,siglen-time2len) winRL(1+end/2:end)];
-X = squeeze(book.reconstruction(1,1,:,:));
+
+X = squeeze(book.reconstruction(epoch,channel,:,:));
 Y = book.parameters(epoch,channel);
 
 for ii = 1:size(Y.amplitudes,1)
@@ -78,7 +79,7 @@ end
 
 id=find(z(mzi:end)-0.5*mz<0);
 if isempty(id)
-    R=z(end);
+    R=size(z,2);
 else
     R=id(1);
 end

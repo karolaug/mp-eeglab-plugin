@@ -170,6 +170,7 @@ function refresh_map()
     title(MPmapSettings.mapaxis , 'Time - Frequency map');
     %xlabel(MPmapSettings.mapaxis , 'Time [s]');
     ylabel(MPmapSettings.mapaxis , 'Frequency [Hz]');
+    set(MPmapSettings.mapaxis , 'TickDir' , 'out' , 'XMinorTick' , 'on', 'YMinorTick' , 'on');
 end
 
 function refresh_signal()

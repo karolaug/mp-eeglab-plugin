@@ -166,7 +166,11 @@ function refresh_map()
     global MPmapSettings;
     global EEG;
     [time , freqs , map] = countAmap(EEG.book , 1:EEG.pnts , EEG.srate , MPmapSettings.trialstag , MPmapSettings.channelstag);
-    plotMap(time,freqs, time(1):0.5:time(end) , freqs(1):5:freqs(end) ,abs((map)),[],[0 EEG.srate/2],1);
+    
+    
+    flimits = freqs(1):5:freqs(end);
+    
+    plotMap(time,freqs, time(1):0.5:time(end) , flimits ,abs((map)),[],[0 EEG.srate/2],1);
     title(MPmapSettings.mapaxis , 'Time - Frequency map');
     %xlabel(MPmapSettings.mapaxis , 'Time [s]');
     ylabel(MPmapSettings.mapaxis , 'Frequency [Hz]');

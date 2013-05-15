@@ -53,7 +53,7 @@ else
     true_amplitude_array = zeros( size(out_book,2) , 1);
     width_array          = zeros( size(out_book,2) , 1);
     frequency_array      = zeros( size(out_book,2) , 1);
-    miu_array            = zeros( size(out_book,2) , 1);
+    %miu_array            = zeros( size(out_book,2) , 1);
     sigma_array          = zeros( size(out_book,2) , 1);
     
     for i = 1: size(out_book,2)
@@ -64,7 +64,7 @@ else
         amplitude_array(i)              = out_book(1,i).amplitude;
         true_amplitude_array(i)         = abs(out_book(1,i).amplitude) * max(envelope_array(i,:));
         frequency_array(i)              = EEG.srate * (out_book(1,i).oscilation / (2*pi));
-        miu_array(i)                    = out_book(1,i).mi;
+        %miu_array(i)                    = out_book(1,i).mi;
         sigma_array(i)                  = out_book(1,i).sigma;
         
         width_array(i)                  = find_width(envelope_array(i,:),EEG.srate);
@@ -77,7 +77,7 @@ else
     parameters_array.amplitudes     = amplitude_array;
     parameters_array.atomAmplitudes = true_amplitude_array;
     parameters_array.frequencies    = frequency_array;
-    parameters_array.mius           = miu_array;
+    %parameters_array.mius           = miu_array;
     parameters_array.sigmas         = sigma_array;
     parameters_array.widths         = width_array;
     disp 'Parameters array - done';

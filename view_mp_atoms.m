@@ -246,7 +246,7 @@ elseif strcmp(check_string, 'chan_step_left')
         disp 'Displaying previous channel'
         MPatomSettings.channelstag = MPatomSettings.channelstag - 1;
         set(MPatomSettings.ch(3),'String',num2str(EEG.book.channel_labels{MPatomSettings.channelstag}));
-        if any(EEG.book.reconstruction(MPatomSettings.trialstag,MPatomSettings.channelstag,MPatomSettings.atomstag+1,:)~=0) == 0 
+        if any(EEG.book.reconstruction(MPatomSettings.trialstag,MPatomSettings.channelstag,MPatomSettings.atomstag,:)~=0) == 0 
             MPatomSettings.atomstag = 1;
         end
         plot_original();
@@ -261,7 +261,7 @@ elseif strcmp(check_string, 'chan_step_right')
         disp 'Displaying next channel'
         MPatomSettings.channelstag = MPatomSettings.channelstag + 1;
         set(MPatomSettings.ch(3),'String',num2str(EEG.book.channel_labels{MPatomSettings.channelstag}));  
-        if any(EEG.book.reconstruction(MPatomSettings.trialstag,MPatomSettings.channelstag,MPatomSettings.atomstag+1,:)~=0) == 0 
+        if any(EEG.book.reconstruction(MPatomSettings.trialstag,MPatomSettings.channelstag,MPatomSettings.atomstag,:)~=0) == 0 
             MPatomSettings.atomstag = 1;
         end
         plot_original();

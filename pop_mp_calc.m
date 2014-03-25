@@ -21,7 +21,7 @@
 
 
 
-function EEG = pop_mp_calc(EEG)
+function [EEG,BOOK] = pop_mp_calc(EEG)
 % Returns parameterised signal and plots time-frequency map
 % of it.
 %
@@ -29,8 +29,10 @@ function EEG = pop_mp_calc(EEG)
 %   >> pop_mp_calc(EEG);          % pop_up window
 %   >> mp_calc(EEG,channel_nr,epoch_nr,minS,maxS,dE,energy,iter,nfft);
 
+global BOOK;
+
 title_string = 'Parameterise a signal in time-frequency domain by means of MP procedure -- pop_mp_calc()';
-geometry = { 1 [1 1] [1 1] 1 1 [1 1] [1 1] [1 1] 1 1 [1 1] [1 1] [1 1] };
+geometry = { 1 [1 1] [1 1] 1 1 [1 1] [1 1] [1 1] 1 1 [1 1] [1 1] [1 1] [1 1] };
 uilist = { ...
          { 'style', 'text', 'string', 'Data info: ', 'fontweight', 'bold'}, ...
          { 'style', 'text', 'string', 'Channel numbers: ' }, ...
@@ -52,7 +54,10 @@ uilist = { ...
          { 'style', 'text', 'string', 'Maximal number of iterations: ' }, ...
          { 'style', 'edit', 'string', '15', 'tag', 'iter'}, ...
          { 'style', 'text', 'string', 'min_NFFT: ' }, ...
-         { 'style', 'edit', 'string', '1024', 'tag', 'nfft'}};
+         { 'style', 'edit', 'string', '1024', 'tag', 'nfft'}, ...
+         { 'style', 'text', 'string', 'Use asymetric functions (1 or 0): ' }, ...
+         { 'style', 'checkbox', 'value', 1, 'tag', 'asym'}, ...
+         };
 
 [~, ~, err params] = inputgui( 'geometry', geometry, 'uilist', uilist, 'helpcom', 'pophelp(''pop_mp_calc'');', 'title' , title_string);
 
@@ -70,30 +75,31 @@ try
     params.iter       = str2num(params.iter);
     params.nfft       = str2num(params.nfft);
     params.energy     = str2num(params.energy);
-    
+    params.asym       = params.asym;
 
-    EEG.book.reconstruction = zeros(size(params.epoch_nr,2),size(params.channel_nr,2),params.iter,size(EEG.data,2));
+    BOOK.reconstruction = zeros(size(params.epoch_nr,2),size(params.channel_nr,2),params.iter,size(EEG.data,2));
     for ch = 1:1:size(params.channel_nr,2)
         for ep = 1:1:size(params.epoch_nr,2)
             sprintf('Calculations for channel: %u, epoch: %u.',ch,ep)
-            [X , Y] = mp_calc(EEG,params.channel_nr(ch),params.epoch_nr(ep),params.minS,params.maxS,params.dE,params.energy,params.iter,params.nfft);
-            EEG.book.reconstruction(ep,ch,1:size(X,1),:) = X;
-            EEG.book.parameters(ep,ch) = Y;
+            [X , Y] = mp_calc(EEG,params.channel_nr(ch),params.epoch_nr(ep),params.minS,params.maxS,params.dE,params.energy,params.iter,params.nfft,params.asym);
+            BOOK.reconstruction(ep,ch,1:size(X,1),:) = X;
+            BOOK.parameters(ep,ch) = Y;
         end
     end
     
-    EEG.book.epoch_labels = params.epoch_nr;
+    BOOK.epoch_labels = params.epoch_nr;
     
     if ~isempty(EEG.chanlocs)
         for i = 1:size(params.channel_nr,2)
-            EEG.book.channel_labels{i} = EEG.chanlocs(1,params.channel_nr(i)).labels;
+            BOOK.channel_labels{i} = EEG.chanlocs(1,params.channel_nr(i)).labels;
         end
     else
         for i = 1:size(params.channel_nr,2)
-            EEG.book.channel_labels{i} = num2str(params.channel_nr(i));
+            BOOK.channel_labels{i} = num2str(params.channel_nr(i));
         end
     end
     disp 'Done'
+
     
 catch ME1
 idSegLast = regexp(ME1.identifier, '(?<=:)\w+$', 'match');

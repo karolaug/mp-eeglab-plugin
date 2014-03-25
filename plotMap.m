@@ -61,9 +61,9 @@ end
 
 set(gca,'XTick',xticks)
 set(gca,'XTickLabel',num2cell(xticks*1e0))
-set(gca,'YTick',yticks)
-set(gca,'YTickLabel',num2cell(yticks/1e0))
+%set(gca,'YTick',yticks)
+%set(gca,'YTickLabel',num2cell(yticks/1e0))
 set(gca,'fontsize',12,'fontname','arial','linewidth',2)
 box on
-xlim(Tlimit)
-ylim(Flimit)
+xlim(MPmapSettings.mapaxis , Tlimit)
+ylim(MPmapSettings.mapaxis , Flimit)

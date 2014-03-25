@@ -22,7 +22,7 @@
 
 
 
-function [omega amplitude envelope reconstruction miOut sigmaOut decayOut] = fitBestAtomGrad( mmax,mi0,sigma0,omega,decay0,signal,tmptime1,TYPE)
+function [omega amplitude envelope reconstruction miOut sigmaOut decayOut] = fitBestAtomGrad( mmax,mi0,sigma0,omega,decay0,signal,tmptime1,TYPE,asym)
 epsilon=1e-3;
 time=1:length(signal);
 time=time-tmptime1;
@@ -32,8 +32,8 @@ sigmaOut=sigma0;
 decayOut=decay0;
 
 if TYPE==1
-   P=fminsearch(@(x) minEnv12(x,signal.*oscillation(time,-omega),time+tmptime1),[0.5/sigma0^2 decay0 mi0],opt);
-   envelope=Asym2Envelope(P,time+tmptime1);
+   P=fminsearch(@(x) minEnv12(x,signal.*oscillation(time,-omega),time+tmptime1,asym),[0.5/sigma0^2 decay0 mi0],opt);
+   envelope=Asym2Envelope(P,time+tmptime1,asym);
    amplitude=sum(signal.*envelope.*oscillation(time,-omega));%sum(signal.*gauss(time+tmptime1,mi0,sigma0).*oscillation(time,-omega));
    miOut=P(3);
    sigmaOut=sqrt(1/2/P(1));
@@ -55,8 +55,8 @@ if TYPE==1
    while (abs(amplitude)-mmax)/mmax > epsilon
 
        mmax=abs(amplitude);
-       P=fminsearch(@(x) minEnv12(x,signal.*oscillation(time,-omega),time+tmptime1),P,opt);
-       envelope=Asym2Envelope(P,time+tmptime1);
+       P=fminsearch(@(x) minEnv12(x,signal.*oscillation(time,-omega),time+tmptime1,asym),P,opt);
+       envelope=Asym2Envelope(P,time+tmptime1,asym);
        amplitude=sum(signal.*envelope.*oscillation(time,-omega));%sum(signal.*gauss(time+tmptime1,mi0,sigma0).*oscillation(time,-omega));
        reconstruction=amplitude*envelope.*(oscillation(time,omega));
        om2=fminsearch(@(x) bestOmega(x,signal.*envelope,time),omega);
@@ -76,17 +76,17 @@ elseif TYPE==2
 
    for typ=1:length(TypTest)
        if typ==1
-           P(typ).p=fminsearch(@(x) minEnv12(x,signal.*oscillation(time,-omega),time+tmptime1),[1/2/(sigma0/3)^2 10/sigma0 mi0-sigma0],opt);
-           P(typ).envelope=Asym2Envelope(P(typ).p,time+tmptime1);
+           P(typ).p=fminsearch(@(x) minEnv12(x,signal.*oscillation(time,-omega),time+tmptime1,asym),[1/2/(sigma0/3)^2 10/sigma0 mi0-sigma0],opt);
+           P(typ).envelope=Asym2Envelope(P(typ).p,time+tmptime1,asym);
            P(typ).amplitude=sum(signal.*P(typ).envelope.*oscillation(time,-omega));%sum(signal.*gauss(time+tmptime1,mi0,sigma0).*oscillation(time,-omega));
            TypTest(typ)=abs(P(typ).amplitude);  
        elseif typ==2
-           P(typ).p=fminsearch(@(x) minEnv3(x,signal.*oscillation(time,-omega),time+tmptime1,3),[0.75/sigma0^4 decay0 mi0],opt);
+           P(typ).p=fminsearch(@(x) minEnv3(x,signal.*oscillation(time,-omega),time+tmptime1,3,asym),[0.75/sigma0^4 decay0 mi0],opt);
            P(typ).envelope=Asym4Envelope(P(typ).p,time+tmptime1);
            P(typ).amplitude=sum(signal.*P(typ).envelope.*oscillation(time,-omega));%sum(signal.*gauss(time+tmptime1,mi0,sigma0).*oscillation(time,-omega));
            TypTest(typ)=abs(P(typ).amplitude);
        elseif typ==3
-           P(typ).p=fminsearch(@(x) minEnv3(x,signal.*oscillation(time,-omega),time+tmptime1,4),[7/8/sigma0^8 decay0 mi0],opt);
+           P(typ).p=fminsearch(@(x) minEnv3(x,signal.*oscillation(time,-omega),time+tmptime1,4,asym),[7/8/sigma0^8 decay0 mi0],opt);
            P(typ).envelope=Asym8Envelope5(P(typ).p,time+tmptime1);
            P(typ).amplitude=sum(signal.*P(typ).envelope.*oscillation(time,-omega));%sum(signal.*gauss(time+tmptime1,mi0,sigma0).*oscillation(time,-omega));
            TypTest(typ)=abs(P(typ).amplitude);       
@@ -123,14 +123,14 @@ elseif TYPE==2
 
    while (abs(amplitude)-mmax)/mmax > epsilon
        mmax=abs(amplitude);
-       P=fminsearch(@(x) minEnv3(x,signal.*oscillation(time,-omega),time+tmptime1,Typ),P,opt);
+       P=fminsearch(@(x) minEnv3(x,signal.*oscillation(time,-omega),time+tmptime1,Typ,asym),P,opt);
 
        if Typ==3
            envelope=Asym4Envelope(P,time+tmptime1);       
        elseif Typ==4
            envelope=Asym8Envelope5(P,time+tmptime1);
        else
-           envelope=Asym2Envelope(P,time+tmptime1);
+           envelope=Asym2Envelope(P,time+tmptime1,asym);
        end
        amplitude=sum(signal.*envelope.*oscillation(time,-omega));%sum(signal.*gauss(time+tmptime1,mi0,sigma0).*oscillation(time,-omega));
        reconstruction=amplitude*envelope.*(oscillation(time,omega));
@@ -152,32 +152,32 @@ else
    for typ=1:length(TypTest)
 
        if typ==1
-           P(1).p=fminsearch(@(x) minEnv3(x,signal.*oscillation(time,-omega),time+tmptime1,typ),[1/sigma0^16 mi0],opt);
+           P(1).p=fminsearch(@(x) minEnv3(x,signal.*oscillation(time,-omega),time+tmptime1,typ,asym),[1/sigma0^16 mi0],opt);
            P(1).envelope=Gabor16Envelope(P(1).p,time+tmptime1);
            P(1).amplitude=sum(signal.*P(1).envelope.*oscillation(time,-omega));%sum(signal.*gauss(time+tmptime1,mi0,sigma0).*oscillation(time,-omega));
            TypTest(typ)=abs(P(1).amplitude);
 
        elseif typ==2
-           P(2).p=fminsearch(@(x) minEnv3(x,signal.*oscillation(time,-omega),time+tmptime1,typ),[1/sigma0^32 mi0],opt);
+           P(2).p=fminsearch(@(x) minEnv3(x,signal.*oscillation(time,-omega),time+tmptime1,typ,asym),[1/sigma0^32 mi0],opt);
            P(2).envelope=Gabor32Envelope(P(2).p,time+tmptime1);
            P(2).amplitude=sum(signal.*P(2).envelope.*oscillation(time,-omega));%sum(signal.*gauss(time+tmptime1,mi0,sigma0).*oscillation(time,-omega));
            TypTest(typ)=abs(P(2).amplitude);
 
        elseif typ==3
-           P(3).p=fminsearch(@(x) minEnv3(x,signal.*oscillation(time,-omega),time+tmptime1,typ),[0.75/sigma0^4 decay0 mi0],opt);
+           P(3).p=fminsearch(@(x) minEnv3(x,signal.*oscillation(time,-omega),time+tmptime1,typ,asym),[0.75/sigma0^4 decay0 mi0],opt);
            P(3).envelope=Asym4Envelope(P(3).p,time+tmptime1);
            P(3).amplitude=sum(signal.*P(3).envelope.*oscillation(time,-omega));%sum(signal.*gauss(time+tmptime1,mi0,sigma0).*oscillation(time,-omega));
            TypTest(typ)=abs(P(3).amplitude);
 
        elseif typ==4
-           P(4).p=fminsearch(@(x) minEnv3(x,signal.*oscillation(time,-omega),time+tmptime1,typ),[7/8/sigma0^8 decay0 mi0],opt);
+           P(4).p=fminsearch(@(x) minEnv3(x,signal.*oscillation(time,-omega),time+tmptime1,typ,asym),[7/8/sigma0^8 decay0 mi0],opt);
            P(4).envelope=Asym8Envelope5(P(4).p,time+tmptime1);
            P(4).amplitude=sum(signal.*P(4).envelope.*oscillation(time,-omega));%sum(signal.*gauss(time+tmptime1,mi0,sigma0).*oscillation(time,-omega));
            TypTest(typ)=abs(P(4).amplitude);
 
        else
-           P(5).p=fminsearch(@(x) minEnv12(x,signal.*oscillation(time,-omega),time+tmptime1),[1/2/(sigma0/3)^2 10/sigma0 mi0-sigma0],opt);
-           P(5).envelope=Asym2Envelope(P(5).p,time+tmptime1);
+           P(5).p=fminsearch(@(x) minEnv12(x,signal.*oscillation(time,-omega),time+tmptime1,asym),[1/2/(sigma0/3)^2 10/sigma0 mi0-sigma0],opt);
+           P(5).envelope=Asym2Envelope(P(5).p,time+tmptime1,asym);
            P(5).amplitude=sum(signal.*P(5).envelope.*oscillation(time,-omega));%sum(signal.*gauss(time+tmptime1,mi0,sigma0).*oscillation(time,-omega));
            TypTest(typ)=abs(P(5).amplitude);           
        end
@@ -203,7 +203,7 @@ else
 
    while (abs(amplitude)-mmax)/mmax > epsilon
        mmax=abs(amplitude);
-       P=fminsearch(@(x) minEnv3(x,signal.*oscillation(time,-omega),time+tmptime1,Typ),P,opt);
+       P=fminsearch(@(x) minEnv3(x,signal.*oscillation(time,-omega),time+tmptime1,Typ,asym),P,opt);
        if Typ==1
            envelope=Gabor16Envelope(P,time+tmptime1);
        elseif Typ==2
@@ -213,7 +213,7 @@ else
        elseif Typ==4
            envelope=Asym8Envelope5(P,time+tmptime1);
        else
-           envelope=Asym2Envelope(P,time+tmptime1);
+           envelope=Asym2Envelope(P,time+tmptime1,asym);
        end
        amplitude=sum(signal.*envelope.*oscillation(time,-omega));%sum(signal.*gauss(time+tmptime1,mi0,sigma0).*oscillation(time,-omega));
        reconstruction=amplitude*envelope.*(oscillation(time,omega));
@@ -261,22 +261,37 @@ y=exp((-c*( tmp_x_mi).^8 )  ./ (1+ d*( tmp_x_mi).^5 .* (atan(1e16*(tmp_x_mi))+pi
 y=y/norm(y);
 return
 
-function y=Asym2Envelope(P,x)
+function y=Asym2Envelope(P,x,asym)     % gives asymetries
 c=P(1);
 d=P(2);
 mi=P(3);
 tmp_x_mi=x-mi;
-y=exp((-c*( tmp_x_mi).^2 )  ./ (1+ d*(tmp_x_mi) .* (atan(1e16*(tmp_x_mi))+pi/2)/pi));
+if asym ==1
+    y=exp((-c*( tmp_x_mi).^2 )  ./ (1+ d*(tmp_x_mi) .* (atan(1e16*(tmp_x_mi))+pi/2)/pi));
+else
+    y=exp((-c*( tmp_x_mi).^2 ));
+end
 y=y/norm(y);
 return
 
-function err=minEnv12(P,signal,x)
-env=Asym2Envelope(P,x);
+
+% function y=Asym2Envelope(P,x)       % without asymeties
+% c=P(1);
+% d=P(2);
+% mi=P(3);
+% tmp_x_mi=x-mi;
+% y=exp((-c*( tmp_x_mi).^2 ));
+% y=y/norm(y);
+% return
+
+
+function err=minEnv12(P,signal,x,asym)
+env=Asym2Envelope(P,x,asym);
 err=-abs(sum(signal.* env ));
 return
 
 
-function err=minEnv3(P,signal,x,typ)
+function err=minEnv3(P,signal,x,typ,asym)
 env=0;
 if typ==1
     env=Gabor16Envelope(P,x);
@@ -287,7 +302,7 @@ elseif typ==3
 elseif typ==4
    env=Asym8Envelope5(P,x);
 else
-   env=Asym2Envelope(P,x);%% >> mieni� na inne!
+   env=Asym2Envelope(P,x,asym);
 end
 err=-abs(sum(signal.* env ));
 return

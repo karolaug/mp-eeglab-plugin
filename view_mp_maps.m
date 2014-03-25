@@ -26,10 +26,11 @@ function view_mp_maps(map_string)
 
 global MPmapSettings;
 global EEG;
+global BOOK;
 
 if strcmp(map_string,'new_plot')
     
-    if ~isfield(EEG, 'book') || isempty(EEG.book)
+    if exist('BOOK','var')==0 || isempty(BOOK)
         throw(MException('MatchingPursuit:view_mp_maps','You should calculate MP first.'));
     end
     
@@ -44,9 +45,11 @@ if strcmp(map_string,'new_plot')
     MPmapSettings.color = [1 1 1];
     MPmapSettings.time = [1:EEG.pnts] / EEG.srate;
     
+    MPmapSettings.freqscale = [0 , EEG.srate / 2];
+    
     MPmapSettings.figure = figure('UserData', MPmapSettings,...
       'Color', MPmapSettings.color, 'Toolbar' , 'figure' , 'name', MPmapSettings.title,...
-      'MenuBar','none','Position',MPmapSettings.position, ...
+      'MenuBar','figure','Position',MPmapSettings.position, ...
       'numbertitle', 'off', 'visible', 'on');
 
     % positions of controlls for epochs scrolling
@@ -116,6 +119,41 @@ if strcmp(map_string,'new_plot')
         'Tag','channel_button_label',...
         'string','Channel');
 
+    
+    % positions of controlls for frequency scale controlling
+    posfreqscale = zeros(4,4);
+    posfreqscale(3,:) = [ 0.8500    0.4000    0.0300    0.0300 ]; % text window
+    posfreqscale(1,:) = [ 0.8900    0.4000    0.0550    0.0300 ]; % set-button
+    posfreqscale(2,:) = [ 0.8500    0.3500    0.1000    0.0300 ]; % default-button
+    posfreqscale(4,:) = [ 0.8500    0.4500    0.1000    0.0300 ]; % label
+    % creation of freqscale-controlls:
+    MPmapSettings.pfs = zeros(4,1);
+    MPmapSettings.pfs(1) = uicontrol('Parent',MPmapSettings.figure, ...
+        'Units', 'normalized', ...
+        'Position', posfreqscale(1,:), ...
+        'Tag','set_scale_button',...
+        'string','SET',...
+        'Callback','view_mp_maps(''set_scale'')');
+    MPmapSettings.pfs(2) = uicontrol('Parent',MPmapSettings.figure, ...
+        'Units', 'normalized', ...
+        'Position', posfreqscale(2,:), ...
+        'Tag','set_scale_default_button',...
+        'string','DEFAULT',...
+        'Callback','view_mp_maps(''default_scale'')');
+    MPmapSettings.pfs(3) = uicontrol('Parent',MPmapSettings.figure, ...
+        'Units', 'normalized', ...
+        'BackgroundColor',[1 1 1], ...
+        'Position', posfreqscale(3,:), ...
+        'Style','edit', ...
+        'Tag','posfreqscale_text',...
+        'string', num2str(MPmapSettings.freqscale));
+    MPmapSettings.pfs(4) = uicontrol('Parent',MPmapSettings.figure, ...
+        'Style','text', ...
+        'Units', 'normalized', ...
+        'Position', posfreqscale(4,:), ...
+        'Tag','posfreqscale_label',...
+        'string','Scale Settings');
+    
     MPmapSettings.mapaxis    = axes('outerposition',[.0  .4  .8  .6]);
     refresh_map();
         
@@ -123,7 +161,7 @@ if strcmp(map_string,'new_plot')
     refresh_signal();
     
 elseif strcmp(map_string,'epoch_step_right')
-    if MPmapSettings.trialstag == size(EEG.book.epoch_labels,2)
+    if MPmapSettings.trialstag == size(BOOK.epoch_labels,2)
         disp 'No further epochs';
     else
         disp 'Displaying next epoch'
@@ -141,10 +179,10 @@ elseif strcmp(map_string,'epoch_step_left')
         refresh_signal();
     end
 elseif strcmp(map_string,'chan_step_right')
-    if MPmapSettings.channelstag == size(EEG.book.channel_labels,2)
+    if MPmapSettings.channelstag == size(BOOK.channel_labels,2)
         disp 'No further channels';
     else
-        disp 'Displaying next channel'
+        disp 'Displaying next channel';
         MPmapSettings.channelstag = MPmapSettings.channelstag + 1;
         refresh_map();
         refresh_signal();
@@ -158,6 +196,19 @@ elseif strcmp(map_string,'chan_step_left')
         refresh_map();
         refresh_signal();
     end
+elseif strcmp(map_string,'set_scale')
+    disp 'Setting frequency scale to the limits given';
+    MPmapSettings.freqscale = str2num(get(MPmapSettings.pfs(3) , 'String'));
+    
+    refresh_map();
+    
+    
+elseif strcmp(map_string,'default_scale')
+    disp 'Setting frequency scale to the default limits';
+    MPmapSettings.freqscale = [0 , EEG.srate / 2];
+    refresh_map();
+    %refresh_signal();
+    set(MPmapSettings.pfs(3) ,'String',num2str(MPmapSettings.freqscale));
 end
 end
 
@@ -165,12 +216,14 @@ end
 function refresh_map()
     global MPmapSettings;
     global EEG;
-    [time , freqs , map] = countAmap(EEG.book , 1:EEG.pnts , EEG.srate , MPmapSettings.trialstag , MPmapSettings.channelstag);
+    global BOOK;
     
+    [time , freqs , map] = countAmap(BOOK , 1:EEG.pnts , EEG.srate , MPmapSettings.trialstag , MPmapSettings.channelstag);
     
     flimits = freqs(1):5:freqs(end);
     
-    plotMap(time,freqs, time(1):0.5:time(end) , flimits ,abs((map)),[],[0 EEG.srate/2],1);
+    plotMap(time,freqs, time(1):0.5:time(end) , flimits ,abs((map)),[],MPmapSettings.freqscale,1);
+    %plotMap(time,freqs, time(1):0.5:time(end) , flimits ,abs((map)),[],[0 EEG.srate/2],1);
     title(MPmapSettings.mapaxis , 'Time - Frequency map');
     %xlabel(MPmapSettings.mapaxis , 'Time [s]');
     ylabel(MPmapSettings.mapaxis , 'Frequency [Hz]');
@@ -179,12 +232,30 @@ end
 
 function refresh_signal()
     global MPmapSettings;
-    global EEG;
-    X = squeeze(EEG.book.reconstruction(MPmapSettings.trialstag,MPmapSettings.channelstag,:,:));
+    global BOOK;
+    
+    X = squeeze(BOOK.reconstruction(MPmapSettings.trialstag,MPmapSettings.channelstag,:,:));
     plot(MPmapSettings.time , sum(real(X),1),'b','Parent',MPmapSettings.signalaxis);
     title(MPmapSettings.signalaxis,'Signal reconstruction');
     xlabel(MPmapSettings.signalaxis , 'Time [s]');
     ylabel(MPmapSettings.signalaxis , 'Amplitude');
-    set(MPmapSettings.e(3) ,'String',num2str(EEG.book.epoch_labels(MPmapSettings.trialstag)));
-    set(MPmapSettings.ch(3),'String',num2str(EEG.book.channel_labels{MPmapSettings.channelstag}));
+    
+    hold on;
+    original =  retrieve_original_signal();
+    plot(MPmapSettings.time , original ,'r','Parent',MPmapSettings.signalaxis);
+    xlim([MPmapSettings.time(1) , MPmapSettings.time(end)]);
+    
+    set(MPmapSettings.e(3) ,'String',num2str(BOOK.epoch_labels(MPmapSettings.trialstag)));
+    set(MPmapSettings.ch(3),'String',num2str(BOOK.channel_labels{MPmapSettings.channelstag}));
+end
+
+function original =  retrieve_original_signal()
+    global MPmapSettings;
+    global EEG;
+    
+    if EEG.trials == 1
+        original = EEG.data(MPmapSettings.channelstag,:);
+    else
+        original = EEG.data(MPmapSettings.channelstag,:,MPmapSettings.trialstag);
+    end
 end

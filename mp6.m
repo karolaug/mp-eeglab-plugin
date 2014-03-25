@@ -22,7 +22,7 @@
 
 
 
-function [out_book, EE]=mp6(signal,envelope_book,MIN_FFT_N,max_iter,minEnergy,dE,GRAD_ON,Fs)
+function [out_book, EE]=mp6(signal,envelope_book,MIN_FFT_N,max_iter,minEnergy,dE,GRAD_ON,Fs,asym)
 
 % compute decomposition
 % input:
@@ -129,7 +129,7 @@ if GRAD_ON,
     mi0=env_part(mmaxInd).time(mi_tmp);
     sigma0=env_part(mmaxInd).sigma;
     
-    [bestOmega bestAmpl bestEnv bestReconstr miOut sigmaOut]=fitBestAtomGrad((mmax),mi0,sigma0,subMaxFreq(mmaxInd),env_part(mmaxInd).decay,signalRest,env_part(mmaxInd).time(1),env_part(mmaxInd).type);
+    [bestOmega bestAmpl bestEnv bestReconstr miOut sigmaOut]=fitBestAtomGrad((mmax),mi0,sigma0,subMaxFreq(mmaxInd),env_part(mmaxInd).decay,signalRest,env_part(mmaxInd).time(1),env_part(mmaxInd).type,asym);
     if abs(bestAmpl)>abs(mmax)
         out_book(ii).oscilation=bestOmega;
         out_book(ii).amplitude=bestAmpl;
@@ -172,7 +172,7 @@ for ii=2:max_iter
         [~, mi_tmp]=max(env_part(mmaxInd).envelope);
         mi0=env_part(mmaxInd).time(mi_tmp);
         sigma0=env_part(mmaxInd).sigma;
-        [bestOmega bestAmpl bestEnv bestReconstr miOut sigmaOut]=fitBestAtomGrad((mmax),mi0,sigma0,subMaxFreq(mmaxInd),env_part(mmaxInd).decay,signalRest,env_part(mmaxInd).time(1),env_part(mmaxInd).type);
+        [bestOmega bestAmpl bestEnv bestReconstr miOut sigmaOut]=fitBestAtomGrad((mmax),mi0,sigma0,subMaxFreq(mmaxInd),env_part(mmaxInd).decay,signalRest,env_part(mmaxInd).time(1),env_part(mmaxInd).type,asym);
         if abs(bestAmpl)>abs(mmax)
             out_book(ii).oscilation=bestOmega;
             out_book(ii).amplitude=bestAmpl;

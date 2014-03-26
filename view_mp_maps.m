@@ -22,11 +22,11 @@
 
 
 
-function view_mp_maps(map_string)
+function view_mp_maps(BOOK , map_string)
 
 global MPmapSettings;
 global EEG;
-global BOOK;
+%global BOOK;
 
 if strcmp(map_string,'new_plot')
     
@@ -65,13 +65,13 @@ if strcmp(map_string,'new_plot')
         'Position', posepoch(1,:), ...
         'Tag','epoch_button_left',...
         'string','<',...
-        'Callback','view_mp_maps(''epoch_step_left'')');
+        'Callback','view_mp_maps(BOOK , ''epoch_step_left'')');
     MPmapSettings.e(2) = uicontrol('Parent',MPmapSettings.figure, ...
         'Units', 'normalized', ...
         'Position', posepoch(2,:), ...
         'Tag','epoch_button_right',...
         'string','>',...
-        'Callback','view_mp_maps(''epoch_step_right'')');
+        'Callback','view_mp_maps(BOOK , ''epoch_step_right'')');
     MPmapSettings.e(3) = uicontrol('Parent',MPmapSettings.figure, ...
         'Units', 'normalized', ...
         'BackgroundColor',[1 1 1], ...
@@ -98,13 +98,13 @@ if strcmp(map_string,'new_plot')
         'Position', poschan(1,:), ...
         'Tag','epoch_button_left',...
         'string','<',...
-        'Callback','view_mp_maps(''chan_step_left'')');
+        'Callback','view_mp_maps(BOOK , ''chan_step_left'')');
     MPmapSettings.ch(2) = uicontrol('Parent',MPmapSettings.figure, ...
         'Units', 'normalized', ...
         'Position', poschan(2,:), ...
         'Tag','epoch_button_right',...
         'string','>',...
-        'Callback','view_mp_maps(''chan_step_right'')');
+        'Callback','view_mp_maps(BOOK , ''chan_step_right'')');
     MPmapSettings.ch(3) = uicontrol('Parent',MPmapSettings.figure, ...
         'Units', 'normalized', ...
         'BackgroundColor',[1 1 1], ...
@@ -133,13 +133,13 @@ if strcmp(map_string,'new_plot')
         'Position', posfreqscale(1,:), ...
         'Tag','set_scale_button',...
         'string','SET',...
-        'Callback','view_mp_maps(''set_scale'')');
+        'Callback','view_mp_maps(BOOK , ''set_scale'')');
     MPmapSettings.pfs(2) = uicontrol('Parent',MPmapSettings.figure, ...
         'Units', 'normalized', ...
         'Position', posfreqscale(2,:), ...
         'Tag','set_scale_default_button',...
         'string','DEFAULT',...
-        'Callback','view_mp_maps(''default_scale'')');
+        'Callback','view_mp_maps(BOOK , ''default_scale'')');
     MPmapSettings.pfs(3) = uicontrol('Parent',MPmapSettings.figure, ...
         'Units', 'normalized', ...
         'BackgroundColor',[1 1 1], ...
@@ -155,10 +155,10 @@ if strcmp(map_string,'new_plot')
         'string','Scale Settings');
     
     MPmapSettings.mapaxis    = axes('outerposition',[.0  .4  .8  .6]);
-    refresh_map();
+    refresh_map(BOOK);
         
     MPmapSettings.signalaxis = axes('outerposition',[.0  .1  .8  .3]);
-    refresh_signal();
+    refresh_signal(BOOK);
     
 elseif strcmp(map_string,'epoch_step_right')
     if MPmapSettings.trialstag == size(BOOK.epoch_labels,2)
@@ -166,8 +166,8 @@ elseif strcmp(map_string,'epoch_step_right')
     else
         disp 'Displaying next epoch'
         MPmapSettings.trialstag = MPmapSettings.trialstag + 1;
-        refresh_map();
-        refresh_signal();
+        refresh_map(BOOK);
+        refresh_signal(BOOK);
     end
 elseif strcmp(map_string,'epoch_step_left')
     if MPmapSettings.trialstag == 1
@@ -175,8 +175,8 @@ elseif strcmp(map_string,'epoch_step_left')
     else
         disp 'Displaying previous epoch'
         MPmapSettings.trialstag = MPmapSettings.trialstag - 1;
-        refresh_map();
-        refresh_signal();
+        refresh_map(BOOK);
+        refresh_signal(BOOK);
     end
 elseif strcmp(map_string,'chan_step_right')
     if MPmapSettings.channelstag == size(BOOK.channel_labels,2)
@@ -184,8 +184,8 @@ elseif strcmp(map_string,'chan_step_right')
     else
         disp 'Displaying next channel';
         MPmapSettings.channelstag = MPmapSettings.channelstag + 1;
-        refresh_map();
-        refresh_signal();
+        refresh_map(BOOK);
+        refresh_signal(BOOK);
     end
 elseif strcmp(map_string,'chan_step_left')
     if MPmapSettings.channelstag == 1
@@ -193,8 +193,8 @@ elseif strcmp(map_string,'chan_step_left')
     else
         disp 'Displaying previous channel'
         MPmapSettings.channelstag = MPmapSettings.channelstag - 1;
-        refresh_map();
-        refresh_signal();
+        refresh_map(BOOK);
+        refresh_signal(BOOK);
     end
 elseif strcmp(map_string,'set_scale')
     disp 'Setting frequency scale to the limits given';
@@ -220,22 +220,22 @@ elseif strcmp(map_string,'set_scale')
         set(MPmapSettings.pfs(3) ,'String',num2str(MPmapSettings.freqscale));
     end
     
-    refresh_map();
+    refresh_map(BOOK);
     
     
 elseif strcmp(map_string,'default_scale')
     disp 'Setting frequency scale to the default limits';
     MPmapSettings.freqscale = [0 , EEG.srate / 2];
-    refresh_map();
+    refresh_map(BOOK);
     set(MPmapSettings.pfs(3) ,'String',num2str(MPmapSettings.freqscale));
 end
 end
 
 
-function refresh_map()
+function refresh_map(BOOK)
     global MPmapSettings;
     global EEG;
-    global BOOK;
+    %global BOOK;
     
     [time , freqs , map] = countAmap(BOOK , 1:EEG.pnts , EEG.srate , MPmapSettings.trialstag , MPmapSettings.channelstag);
     
@@ -249,9 +249,9 @@ function refresh_map()
     set(MPmapSettings.mapaxis , 'TickDir' , 'out' , 'XMinorTick' , 'on', 'YMinorTick' , 'on');
 end
 
-function refresh_signal()
+function refresh_signal(BOOK)
     global MPmapSettings;
-    global BOOK;
+    %global BOOK;
     
     X = squeeze(BOOK.reconstruction(MPmapSettings.trialstag,MPmapSettings.channelstag,:,:));
     plot(MPmapSettings.time , sum(real(X),1),'b','Parent',MPmapSettings.signalaxis);

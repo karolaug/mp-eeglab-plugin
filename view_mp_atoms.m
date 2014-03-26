@@ -19,11 +19,11 @@
 %    Konrad Kwaśkiewicz <konrad.kwaskiewicz@gmail.com>
 %    Karol Auguštin <karol@augustin.pl>
 
-function view_mp_atoms(check_string)
+function view_mp_atoms(BOOK , check_string)
 
 global MPatomSettings;
 global EEG;
-global BOOK;
+%global BOOK;
 
 if strcmp(check_string,'new_plot')
     
@@ -56,13 +56,13 @@ if strcmp(check_string,'new_plot')
         'Position', posepoch(1,:), ...
         'Tag','epoch_button_left',...
         'string','<',...
-        'Callback','view_mp_atoms(''epoch_step_left'')');
+        'Callback','view_mp_atoms(BOOK , ''epoch_step_left'')');
     MPatomSettings.e(2) = uicontrol('Parent',MPatomSettings.figure, ...
         'Units', 'normalized', ...
         'Position', posepoch(2,:), ...
         'Tag','epoch_button_right',...
         'string','>',...
-        'Callback','view_mp_atoms(''epoch_step_right'')');
+        'Callback','view_mp_atoms(BOOK , ''epoch_step_right'')');
     MPatomSettings.e(3) = uicontrol('Parent',MPatomSettings.figure, ...
         'Units', 'normalized', ...
         'BackgroundColor',[1 1 1], ...
@@ -89,13 +89,13 @@ if strcmp(check_string,'new_plot')
         'Position', poschan(1,:), ...
         'Tag','epoch_button_left',...
         'string','<',...
-        'Callback','view_mp_atoms(''chan_step_left'')');
+        'Callback','view_mp_atoms(BOOK , ''chan_step_left'')');
     MPatomSettings.ch(2) = uicontrol('Parent',MPatomSettings.figure, ...
         'Units', 'normalized', ...
         'Position', poschan(2,:), ...
         'Tag','epoch_button_right',...
         'string','>',...
-        'Callback','view_mp_atoms(''chan_step_right'')');
+        'Callback','view_mp_atoms(BOOK , ''chan_step_right'')');
     MPatomSettings.ch(3) = uicontrol('Parent',MPatomSettings.figure, ...
         'Units', 'normalized', ...
         'BackgroundColor',[1 1 1], ...
@@ -197,13 +197,13 @@ if strcmp(check_string,'new_plot')
         'Position', posatom(1,:), ...
         'Tag','epoch_button_left',...
         'string','<',...
-        'Callback','view_mp_atoms(''atom_step_left'')');
+        'Callback','view_mp_atoms(BOOK , ''atom_step_left'')');
     MPatomSettings.a(2) = uicontrol('Parent',MPatomSettings.figure, ...
         'Units', 'normalized', ...
         'Position', posatom(2,:), ...
         'Tag','epoch_button_right',...
         'string','>',...
-        'Callback','view_mp_atoms(''atom_step_right'')');
+        'Callback','view_mp_atoms(BOOK , ''atom_step_right'')');
     MPatomSettings.a(3) = uicontrol('Parent',MPatomSettings.figure, ...
         'Units', 'normalized', ...
         'BackgroundColor',[1 1 1], ...
@@ -218,12 +218,12 @@ if strcmp(check_string,'new_plot')
         'Tag','atom_button_label',...
         'string','Atom');
     MPatomSettings.originalaxis = axes('outerposition',[.0  .7  .8  .3]);
-        plot_original();
+        plot_original(BOOK);
     MPatomSettings.reconstructaxis = axes('outerposition',[.0  .4  .8  .3]);
-        plot_reconstruct();
+        plot_reconstruct(BOOK);
     MPatomSettings.atomaxis = axes('outerposition',[.0  .1  .8  .3]);
-        plot_atom();
-        refresh_atom_parameters();
+        plot_atom(BOOK);
+        refresh_atom_parameters(BOOK);
         
 elseif strcmp(check_string, 'epoch_step_left')
     if MPatomSettings.trialstag == 1
@@ -236,10 +236,10 @@ elseif strcmp(check_string, 'epoch_step_left')
             MPatomSettings.atomstag = 1;
             set(MPatomSettings.a(3),'String',num2str(MPatomSettings.atomstag));
         end
-        plot_original();
-        plot_reconstruct();
-        plot_atom();
-        refresh_atom_parameters();
+        plot_original(BOOK);
+        plot_reconstruct(BOOK);
+        plot_atom(BOOK);
+        refresh_atom_parameters(BOOK);
     end 
 elseif strcmp(check_string, 'epoch_step_right')
     if MPatomSettings.trialstag == size(BOOK.epoch_labels,2)
@@ -251,10 +251,10 @@ elseif strcmp(check_string, 'epoch_step_right')
         if any(BOOK.reconstruction(MPatomSettings.trialstag,MPatomSettings.channelstag,MPatomSettings.atomstag,:)~=0) == 0 
             MPatomSettings.atomstag = 1;
         end
-        plot_original();
-        plot_reconstruct();
-        plot_atom();
-        refresh_atom_parameters();
+        plot_original(BOOK);
+        plot_reconstruct(BOOK);
+        plot_atom(BOOK);
+        refresh_atom_parameters(BOOK);
     end  
 elseif strcmp(check_string, 'chan_step_left')
     if MPatomSettings.channelstag == 1
@@ -266,10 +266,10 @@ elseif strcmp(check_string, 'chan_step_left')
         if any(BOOK.reconstruction(MPatomSettings.trialstag,MPatomSettings.channelstag,MPatomSettings.atomstag,:)~=0) == 0 
             MPatomSettings.atomstag = 1;
         end
-        plot_original();
-        plot_reconstruct();
-        plot_atom();
-        refresh_atom_parameters();
+        plot_original(BOOK);
+        plot_reconstruct(BOOK);
+        plot_atom(BOOK);
+        refresh_atom_parameters(BOOK);
     end    
 elseif strcmp(check_string, 'chan_step_right')
     if MPatomSettings.channelstag == size(BOOK.channel_labels,2)
@@ -281,10 +281,10 @@ elseif strcmp(check_string, 'chan_step_right')
         if any(BOOK.reconstruction(MPatomSettings.trialstag,MPatomSettings.channelstag,MPatomSettings.atomstag,:)~=0) == 0 
             MPatomSettings.atomstag = 1;
         end
-        plot_original();
-        plot_reconstruct();
-        plot_atom();
-        refresh_atom_parameters();
+        plot_original(BOOK);
+        plot_reconstruct(BOOK);
+        plot_atom(BOOK);
+        refresh_atom_parameters(BOOK);
     end
 elseif strcmp(check_string, 'atom_step_left')
     if MPatomSettings.atomstag == 1
@@ -292,8 +292,8 @@ elseif strcmp(check_string, 'atom_step_left')
     else
         disp 'Displaying previous atom'
         MPatomSettings.atomstag = MPatomSettings.atomstag - 1;
-        plot_atom();
-        refresh_atom_parameters();
+        plot_atom(BOOK);
+        refresh_atom_parameters(BOOK);
     end
 elseif strcmp(check_string, 'atom_step_right')
     if MPatomSettings.atomstag == size(BOOK.reconstruction(MPatomSettings.trialstag,MPatomSettings.channelstag,:,:),3) || any(BOOK.reconstruction(MPatomSettings.trialstag,MPatomSettings.channelstag,MPatomSettings.atomstag+1,:)~=0) == 0
@@ -301,16 +301,16 @@ elseif strcmp(check_string, 'atom_step_right')
     else
         disp 'Displaying next atom'
         MPatomSettings.atomstag = MPatomSettings.atomstag + 1;
-        plot_atom();
-        refresh_atom_parameters();
+        plot_atom(BOOK);
+        refresh_atom_parameters(BOOK);
     end
 end
 end
 
-function plot_original()
+function plot_original(BOOK)
     global EEG;
     global MPatomSettings;
-    global BOOK;
+    %global BOOK;
     
     t  = BOOK.epoch_labels(MPatomSettings.trialstag);
     %ch = str2num(BOOK.channel_labels{MPatomSettings.channelstag});
@@ -321,9 +321,9 @@ function plot_original()
     ylabel(MPatomSettings.originalaxis , 'Amplitude');
     xlim([MPatomSettings.time(1) , MPatomSettings.time(end)]);
 end
-function plot_reconstruct()
+function plot_reconstruct(BOOK)
     global MPatomSettings;
-    global BOOK;
+    %global BOOK;
     
     X = squeeze(BOOK.reconstruction(MPatomSettings.trialstag,MPatomSettings.channelstag,:,:));
     plot(MPatomSettings.time , sum(real(X),1),'k','Parent',MPatomSettings.reconstructaxis);
@@ -332,9 +332,9 @@ function plot_reconstruct()
     ylabel(MPatomSettings.reconstructaxis , 'Amplitude');
     xlim([MPatomSettings.time(1) , MPatomSettings.time(end)]);
 end
-function plot_atom()
+function plot_atom(BOOK)
     global MPatomSettings;
-    global BOOK;
+    %global BOOK;
     
     plot(MPatomSettings.time , squeeze(real(BOOK.reconstruction(MPatomSettings.trialstag,MPatomSettings.channelstag,MPatomSettings.atomstag,:))),'k','Parent',MPatomSettings.atomaxis);
     title(MPatomSettings.atomaxis,'Reconstructing functions');
@@ -350,10 +350,10 @@ function plot_atom()
     %hold off
 end
 
-function refresh_atom_parameters()
+function refresh_atom_parameters(BOOK)
     global EEG;    
     global MPatomSettings;
-    global BOOK;
+    %global BOOK;
     
     % f(3)-pos f(5)-width f(7)-freq f(9)-lat
     

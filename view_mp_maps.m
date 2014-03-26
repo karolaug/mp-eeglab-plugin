@@ -260,7 +260,7 @@ function refresh_signal(BOOK)
     ylabel(MPmapSettings.signalaxis , 'Amplitude');
     
     hold on;
-    original =  retrieve_original_signal();
+    original =  retrieve_original_signal(BOOK);
     plot(MPmapSettings.time , original ,'r','Parent',MPmapSettings.signalaxis);
     xlim([MPmapSettings.time(1) , MPmapSettings.time(end)]);
     
@@ -269,13 +269,18 @@ function refresh_signal(BOOK)
     hold off;
 end
 
-function original =  retrieve_original_signal()
+function original =  retrieve_original_signal(BOOK)
     global MPmapSettings;
     global EEG;
     
+    ch = str2num(BOOK.channel_labels{MPmapSettings.channelstag});
+    if isempty(ch)
+        ch = BOOK.channel_indexes(MPmapSettings.channelstag);  
+    end
+    
     if EEG.trials == 1
-        original = EEG.data(MPmapSettings.channelstag,:);
+        original = EEG.data(ch,:);
     else
-        original = EEG.data(MPmapSettings.channelstag,:,MPmapSettings.trialstag);
+        original = EEG.data(ch,:,MPmapSettings.trialstag);
     end
 end

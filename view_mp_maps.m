@@ -200,6 +200,26 @@ elseif strcmp(map_string,'set_scale')
     disp 'Setting frequency scale to the limits given';
     MPmapSettings.freqscale = str2num(get(MPmapSettings.pfs(3) , 'String'));
     
+    
+    if MPmapSettings.freqscale(1) > MPmapSettings.freqscale(2)
+        tmp = MPmapSettings.freqscale(1);
+        MPmapSettings.freqscale(1) = MPmapSettings.freqscale(2);
+        MPmapSettings.freqscale(2) = tmp;
+        set(MPmapSettings.pfs(3) ,'String',num2str(MPmapSettings.freqscale));
+    end
+    
+    if MPmapSettings.freqscale(1) < 0 || MPmapSettings.freqscale(2) < 0
+        disp 'There are no negative frequencies -- aborting';
+        set(MPmapSettings.pfs(3) ,'String',num2str(MPmapSettings.freqscale));
+        return
+    end
+    
+    if MPmapSettings.freqscale(2) > EEG.srate/2
+        disp 'Frequencies above Nyquist threshold are non existent -- cutting to Nyquist freq';
+        MPmapSettings.freqscale(2) = EEG.srate/2;
+        set(MPmapSettings.pfs(3) ,'String',num2str(MPmapSettings.freqscale));
+    end
+    
     refresh_map();
     
     
@@ -207,7 +227,6 @@ elseif strcmp(map_string,'default_scale')
     disp 'Setting frequency scale to the default limits';
     MPmapSettings.freqscale = [0 , EEG.srate / 2];
     refresh_map();
-    %refresh_signal();
     set(MPmapSettings.pfs(3) ,'String',num2str(MPmapSettings.freqscale));
 end
 end
@@ -247,6 +266,7 @@ function refresh_signal()
     
     set(MPmapSettings.e(3) ,'String',num2str(BOOK.epoch_labels(MPmapSettings.trialstag)));
     set(MPmapSettings.ch(3),'String',num2str(BOOK.channel_labels{MPmapSettings.channelstag}));
+    hold off;
 end
 
 function original =  retrieve_original_signal()

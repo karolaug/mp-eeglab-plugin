@@ -37,6 +37,6 @@ com3 = [ try_strings.no_check 'view_mp_atoms(''new_plot'');' catch_strings.new_n
 
 uimenu( MPmenu, 'label', 'Calculate MP', 'callback', com1);
 uimenu( MPmenu, 'label', 'View time - frequency maps', 'callback', com2);
-uimenu( MPmenu, 'label', 'Inspect resulting decomposition', 'callback', com3);
+uimenu( MPmenu, 'label', 'View resulting atoms', 'callback', com3);
 
 end

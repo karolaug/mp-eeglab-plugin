@@ -89,6 +89,10 @@ try
     
     BOOK.epoch_labels = params.epoch_nr;
     
+    for ind1 = 1 : size(params.epoch_nr)
+       BOOK.channel_indexes(ind1) = params.channel_nr(ind1); 
+    end
+    
     if ~isempty(EEG.chanlocs)
         for i = 1:size(params.channel_nr,2)
             BOOK.channel_labels{i} = EEG.chanlocs(1,params.channel_nr(i)).labels;

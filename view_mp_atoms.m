@@ -316,6 +316,11 @@ function plot_original(BOOK)
     
     %ch = BOOK.channel_labels{MPatomSettings.chanelstag};
     ch = str2num(BOOK.channel_labels{MPatomSettings.channelstag});
+    
+    if isempty(ch)
+        ch = BOOK.channel_indexes(MPatomSettings.channelstag);  
+    end
+    
     %ch = MPatomSettings.channelstag;
     plot(MPatomSettings.time , EEG.data(ch,:,t),'k','Parent',MPatomSettings.originalaxis);
     title(MPatomSettings.originalaxis,'Original signal');

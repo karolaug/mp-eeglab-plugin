@@ -313,8 +313,10 @@ function plot_original(BOOK)
     %global BOOK;
     
     t  = BOOK.epoch_labels(MPatomSettings.trialstag);
-    %ch = str2num(BOOK.channel_labels{MPatomSettings.channelstag});
-    ch = MPatomSettings.channelstag;
+    
+    %ch = BOOK.channel_labels{MPatomSettings.chanelstag};
+    ch = str2num(BOOK.channel_labels{MPatomSettings.channelstag});
+    %ch = MPatomSettings.channelstag;
     plot(MPatomSettings.time , EEG.data(ch,:,t),'k','Parent',MPatomSettings.originalaxis);
     title(MPatomSettings.originalaxis,'Original signal');
     MPatomSettings.yaxlimits=get(MPatomSettings.originalaxis,'YLim');
@@ -327,6 +329,7 @@ function plot_reconstruct(BOOK)
     
     X = squeeze(BOOK.reconstruction(MPatomSettings.trialstag,MPatomSettings.channelstag,:,:));
     plot(MPatomSettings.time , sum(real(X),1),'k','Parent',MPatomSettings.reconstructaxis);
+    %plot(MPatomSettings.time , sum(imag(X),1),'k','Parent',MPatomSettings.reconstructaxis);
     title(MPatomSettings.reconstructaxis,'Signal reconstruction');
     set(MPatomSettings.reconstructaxis,'YLim',MPatomSettings.yaxlimits);
     ylabel(MPatomSettings.reconstructaxis , 'Amplitude');

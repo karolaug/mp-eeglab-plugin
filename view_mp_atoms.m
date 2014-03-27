@@ -25,6 +25,12 @@ global MPatomSettings;
 global EEG;
 LASTCOM = [];
 
+string_prefix  = 'view_mp_atoms(BOOK';
+string_postfix = check_string;
+tmpcom = [string_prefix , ' , ''' , string_postfix , ''');'];
+
+LASTCOM = [LASTCOM , tmpcom];
+
 if strcmp(check_string,'new_plot')
     
     if exist('BOOK','var')==0 || isempty(BOOK)

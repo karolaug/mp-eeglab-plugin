@@ -22,11 +22,11 @@
 
 
 
-function view_mp_maps(BOOK , map_string)
+function [BOOK , LASTCOM] = view_mp_maps(BOOK , map_string)
 
 global MPmapSettings;
 global EEG;
-%global BOOK;
+LASTCOM = [];
 
 if strcmp(map_string,'new_plot')
     

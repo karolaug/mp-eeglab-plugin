@@ -21,19 +21,30 @@
 
 
 
-function [EEG,BOOK] = pop_mp_calc(EEG)
-% Returns parameterised signal and plots time-frequency map
-% of it.
-%
-% Usage:
-%   >> pop_mp_calc(EEG);          % pop_up window
-%   >> mp_calc(EEG,channel_nr,epoch_nr,minS,maxS,dE,energy,iter,nfft);
+function [BOOK,LASTCOM] = pop_mp_calc(EEG , varargin)
+    % Returns parameterised signal and plots time-frequency map
+    % of it.
+    %
+    % Usage:
+    %   >> pop_mp_calc(EEG);          % pop_up window
+    %   >> mp_calc(EEG,channel_nr,epoch_nr,minS,maxS,dE,energy,iter,nfft,asym);
 
-global BOOK;
+    BOOK = [];
+    LASTCOM = [];
 
-title_string = 'Parameterise a signal in time-frequency domain by means of MP procedure -- pop_mp_calc()';
-geometry = { 1 [1 1] [1 1] 1 1 [1 1] [1 1] [1 1] 1 1 [1 1] [1 1] [1 1] [1 1] };
-uilist = { ...
+    if nargin < 1
+        help pop_mp_calc;
+        return;
+    end
+    
+    if isempty(EEG.data)
+        error('Cannot process empty dataset');
+    end
+
+    if nargin == 1
+        title_string = 'Parameterise a signal in time-frequency domain by means of MP procedure -- pop_mp_calc()';
+        geometry = { 1 [1 1] [1 1] 1 1 [1 1] [1 1] [1 1] 1 1 [1 1] [1 1] [1 1] [1 1] };
+        uilist = { ...
          { 'style', 'text', 'string', 'Data info: ', 'fontweight', 'bold'}, ...
          { 'style', 'text', 'string', 'Channel numbers: ' }, ...
          { 'style', 'edit', 'string', '1', 'tag', 'channel_nr'}, ...
@@ -59,58 +70,83 @@ uilist = { ...
          { 'style', 'checkbox', 'value', 1, 'tag', 'asym'}, ...
          };
 
-[~, ~, err params] = inputgui( 'geometry', geometry, 'uilist', uilist, 'helpcom', 'pophelp(''pop_mp_calc'');', 'title' , title_string);
-
-% try
-%     EEG = rmfield(EEG , 'book');
-% catch ME2
-% end
-    
-try
-    params.channel_nr = str2num(params.channel_nr);
-    params.epoch_nr   = str2num(params.epoch_nr);
-    params.dE         = str2num(params.dE);
-    params.minS       = str2num(params.minS);
-    params.maxS       = str2num(params.maxS);
-    params.iter       = str2num(params.iter);
-    params.nfft       = str2num(params.nfft);
-    params.energy     = str2num(params.energy);
-    params.asym       = params.asym;
-
-    BOOK.reconstruction = zeros(size(params.epoch_nr,2),size(params.channel_nr,2),params.iter,size(EEG.data,2));
-    for ch = 1:1:size(params.channel_nr,2)
-        for ep = 1:1:size(params.epoch_nr,2)
-            sprintf('Calculations for channel: %u, epoch: %u.',ch,ep)
-            [X , Y] = mp_calc(EEG,params.channel_nr(ch),params.epoch_nr(ep),params.minS,params.maxS,params.dE,params.energy,params.iter,params.nfft,params.asym);
-            BOOK.reconstruction(ep,ch,1:size(X,1),:) = X;
-            BOOK.parameters(ep,ch) = Y;
+        [~, ~, err params] = inputgui( 'geometry', geometry, 'uilist', uilist, 'helpcom', 'pophelp(''pop_mp_calc'');', 'title' , title_string);
+        if isempty(params) == 1, return; end
+        
+        try
+            params.channel_nr = str2num(params.channel_nr);
+            params.epoch_nr   = str2num(params.epoch_nr);
+            params.dE         = str2num(params.dE);
+            params.minS       = str2num(params.minS);
+            params.maxS       = str2num(params.maxS);
+            params.iter       = str2num(params.iter);
+            params.nfft       = str2num(params.nfft);
+            params.energy     = str2num(params.energy);
+            params.asym       = params.asym;
+        catch ME1
+            throw(ME1);
         end
-    end
-    
-    BOOK.epoch_labels = params.epoch_nr;
-    
-    for ind1 = 1 : size(params.epoch_nr)
-       BOOK.channel_indexes(ind1) = params.channel_nr(ind1); 
-    end
-    
-    if ~isempty(EEG.chanlocs)
-        for i = 1:size(params.channel_nr,2)
-            BOOK.channel_labels{i} = EEG.chanlocs(1,params.channel_nr(i)).labels;
+        
+    elseif nargin == 10
+        % mp_calc(EEG,channel_nr,epoch_nr,minS,maxS,dE,energy,iter,nfft,asym);
+        params = [];
+                
+        try
+            params.channel_nr = varargin{1};
+            params.epoch_nr   = varargin{2};
+            params.minS       = varargin{3};
+            params.maxS       = varargin{4};
+            params.dE         = varargin{5};
+            params.energy     = varargin{6};
+            params.iter       = varargin{7};
+            params.nfft       = varargin{8};
+            params.asym       = varargin{9};
+        catch ME1
+            throw(ME1);
         end
     else
-        for i = 1:size(params.channel_nr,2)
-            BOOK.channel_labels{i} = num2str(params.channel_nr(i));
-        end
+        disp 'Not enough input parameters -- aborting';
+        return;
     end
-    disp 'Done'
-
     
-catch ME1
-idSegLast = regexp(ME1.identifier, '(?<=:)\w+$', 'match');
-if strcmp(idSegLast, 'nonStrucReference')
-    disp 'Aborted by user'
-else
-    throw(ME1);
+    try
+        BOOK.reconstruction = zeros(size(params.epoch_nr,2),size(params.channel_nr,2),params.iter,size(EEG.data,2));
+        for ch = 1:1:size(params.channel_nr,2)
+            for ep = 1:1:size(params.epoch_nr,2)
+                sprintf('Calculations for channel: %u, epoch: %u.',ch,ep)
+                [X , Y] = mp_calc(EEG,params.channel_nr(ch),params.epoch_nr(ep),params.minS,params.maxS,params.dE,params.energy,params.iter,params.nfft,params.asym);
+                BOOK.reconstruction(ep,ch,1:size(X,1),:) = X;
+                BOOK.parameters(ep,ch) = Y;
+            end
+        end
 
-end
+        tmpstring = 'mp_calc(EEG';
+        
+        fields = fieldnames(params);
+        for ind1 = 1:numel(fields)
+            tmpstring = [tmpstring , ' , ' , num2str(params.(fields{ind1}))]; 
+        end
+        LASTCOM = [tmpstring , ');'];
+        
+        BOOK.epoch_labels = params.epoch_nr;
+
+        for ind1 = 1 : size(params.channel_nr,2)
+            BOOK.channel_indexes(ind1) = params.channel_nr(ind1); 
+        end
+
+        if ~isempty(EEG.chanlocs)
+            for i = 1:size(params.channel_nr,2)
+                BOOK.channel_labels{i} = EEG.chanlocs(1,params.channel_nr(i)).labels;
+            end
+        else
+            for i = 1:size(params.channel_nr,2)
+                BOOK.channel_labels{i} = num2str(params.channel_nr(i));
+            end
+        end
+    catch ME1
+        throw(ME1);
+    end
+    
+    
+    disp 'Done'
 end

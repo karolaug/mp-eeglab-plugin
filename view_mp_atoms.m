@@ -19,11 +19,11 @@
 %    Konrad Kwaśkiewicz <konrad.kwaskiewicz@gmail.com>
 %    Karol Auguštin <karol@augustin.pl>
 
-function view_mp_atoms(BOOK , check_string)
+function [BOOK , LASTCOM] = view_mp_atoms(BOOK , check_string)
 
 global MPatomSettings;
 global EEG;
-%global BOOK;
+LASTCOM = [];
 
 if strcmp(check_string,'new_plot')
     

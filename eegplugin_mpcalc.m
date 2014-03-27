@@ -31,9 +31,9 @@ end;
 Toolmenu = findobj(fig, 'tag', 'tools');
 MPmenu = uimenu( Toolmenu, 'label', 'Matching Pursuit analysis');
 
-com1 = [ try_strings.no_check '[EEG,BOOK] = pop_mp_calc(EEG);' catch_strings.new_non_empty ];
-com2 = [ try_strings.no_check 'view_mp_maps(BOOK , ''new_plot'');' catch_strings.new_non_empty ];
-com3 = [ try_strings.no_check 'view_mp_atoms(BOOK , ''new_plot'');' catch_strings.new_non_empty ];
+com1 = [ try_strings.no_check '[BOOK , LASTCOM] = pop_mp_calc(EEG);' catch_strings.add_to_hist ];
+com2 = [ try_strings.no_check '[BOOK , LASTCOM] = view_mp_maps(BOOK , ''new_plot'');' catch_strings.add_to_hist ];
+com3 = [ try_strings.no_check '[BOOK , LASTCOM] = view_mp_atoms(BOOK , ''new_plot'');' catch_strings.add_to_hist ];
 
 uimenu( MPmenu, 'label', 'Calculate MP', 'callback', com1);
 uimenu( MPmenu, 'label', 'View time - frequency maps', 'callback', com2);

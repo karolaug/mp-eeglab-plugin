@@ -336,11 +336,9 @@ function plot_original(BOOK)
 end
 function plot_reconstruct(BOOK)
     global MPatomSettings;
-    %global BOOK;
     
     X = squeeze(BOOK.reconstruction(MPatomSettings.trialstag,MPatomSettings.channelstag,:,:));
     plot(MPatomSettings.time , sum(real(X),1),'k','Parent',MPatomSettings.reconstructaxis);
-    %plot(MPatomSettings.time , sum(imag(X),1),'k','Parent',MPatomSettings.reconstructaxis);
     title(MPatomSettings.reconstructaxis,'Signal reconstruction');
     set(MPatomSettings.reconstructaxis,'YLim',MPatomSettings.yaxlimits);
     ylabel(MPatomSettings.reconstructaxis , 'Amplitude');
@@ -348,7 +346,6 @@ function plot_reconstruct(BOOK)
 end
 function plot_atom(BOOK)
     global MPatomSettings;
-    %global BOOK;
     
     plot(MPatomSettings.time , squeeze(real(BOOK.reconstruction(MPatomSettings.trialstag,MPatomSettings.channelstag,MPatomSettings.atomstag,:))),'k','Parent',MPatomSettings.atomaxis);
     title(MPatomSettings.atomaxis,'Reconstructing functions');
@@ -367,8 +364,6 @@ end
 function refresh_atom_parameters(BOOK)
     global EEG;    
     global MPatomSettings;
-    %global BOOK;
-    
     % f(3)-pos f(5)-width f(7)-freq f(9)-lat
     
     MPatomSettings.trialstag;

@@ -43,7 +43,7 @@ function [BOOK,LASTCOM] = pop_mp_calc(EEG , varargin)
 
     if nargin == 1
         title_string = 'Parameterise a signal in time-frequency domain by means of MP procedure -- pop_mp_calc()';
-        geometry = { 1 [1 1] [1 1] 1 1 [1 1] [1 1] [1 1] 1 1 [1 1] [1 1] [1 1] [1 1] };
+        geometry = { 1 [1 1] [1 1] 1 1 [1 1] [1 1] [1 1] 1 1 [1 1] [1 1] [1 1] [1 1] [1 1]};
         uilist = { ...
          { 'style', 'text', 'string', 'Data info: ', 'fontweight', 'bold'}, ...
          { 'style', 'text', 'string', 'Channel numbers: ' }, ...
@@ -66,8 +66,10 @@ function [BOOK,LASTCOM] = pop_mp_calc(EEG , varargin)
          { 'style', 'edit', 'string', '15', 'tag', 'iter'}, ...
          { 'style', 'text', 'string', 'min_NFFT: ' }, ...
          { 'style', 'edit', 'string', num2str(2 * EEG.srate), 'tag', 'nfft'}, ...
-         { 'style', 'text', 'string', 'Use asymetric functions (1 or 0): ' }, ...
+         { 'style', 'text', 'string', 'Use asymetric functions: ' }, ...
          { 'style', 'checkbox', 'value', 1, 'tag', 'asym'}, ...
+         { 'style', 'text', 'string', 'Use rectangle functions: ' }, ...
+         { 'style', 'checkbox', 'value', 0, 'tag', 'rect'}, ...
          };
 
         [~, ~, err params] = inputgui( 'geometry', geometry, 'uilist', uilist, 'helpcom', 'pophelp(''pop_mp_calc'');', 'title' , title_string);
@@ -83,11 +85,12 @@ function [BOOK,LASTCOM] = pop_mp_calc(EEG , varargin)
             params.nfft       = str2num(params.nfft);
             params.energy     = str2num(params.energy);
             params.asym       = params.asym;
+            params.rect       = params.rect;
         catch ME1
             throw(ME1);
         end
         
-    elseif nargin == 10
+    elseif nargin == 11
         % mp_calc(EEG,channel_nr,epoch_nr,minS,maxS,dE,energy,iter,nfft,asym);
         params = [];
                 
@@ -101,6 +104,7 @@ function [BOOK,LASTCOM] = pop_mp_calc(EEG , varargin)
             params.iter       = varargin{7};
             params.nfft       = varargin{8};
             params.asym       = varargin{9};
+            params.rect       = varargin{10};
         catch ME1
             throw(ME1);
         end
@@ -114,13 +118,13 @@ function [BOOK,LASTCOM] = pop_mp_calc(EEG , varargin)
         for ch = 1:1:size(params.channel_nr,2)
             for ep = 1:1:size(params.epoch_nr,2)
                 sprintf('Calculations for channel: %u, epoch: %u.',ch,ep)
-                [X , Y] = mp_calc(EEG,params.channel_nr(ch),params.epoch_nr(ep),params.minS,params.maxS,params.dE,params.energy,params.iter,params.nfft,params.asym);
+                [X , Y] = mp_calc(EEG,params.channel_nr(ch),params.epoch_nr(ep),params.minS,params.maxS,params.dE,params.energy,params.iter,params.nfft,params.asym,params.rect);
                 BOOK.reconstruction(ep,ch,1:size(X,1),:) = X;
                 BOOK.parameters(ep,ch) = Y;
             end
         end
 
-        tmpstring = 'mp_calc(EEG';
+        tmpstring = 'pop_mp_calc(EEG';
         
         fields = fieldnames(params);
         for ind1 = 1:numel(fields)

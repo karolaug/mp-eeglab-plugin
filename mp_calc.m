@@ -22,7 +22,7 @@
 
 
 
-function [reconstructing_array parameters_array] = mp_calc(EEG,channel_nr,epoch_nr,minS,maxS,dE,energy,iter,nfft,asym)
+function [reconstructing_array parameters_array] = mp_calc(EEG,channel_nr,epoch_nr,minS,maxS,dE,energy,iter,nfft,asym,rect)
 
 if (channel_nr > EEG.nbchan) || (channel_nr < 1)
     throw(MException('MatchingPursuit:mp_calc','Nonexisting channel number.'));
@@ -32,7 +32,7 @@ elseif (epoch_nr > EEG.trials) || (epoch_nr < 1)
 else
     dictionary_params = [minS maxS dE];
     disp 'Dictionary params - done';
-    [book] = defineMixedInbook(dictionary_params , EEG.times , asym);
+    [book] = defineMixedInbook(dictionary_params , EEG.times , asym , rect);
     disp 'Dictionary - done';
     sig = EEG.data(channel_nr , : , epoch_nr)';
     disp 'Signal - done';

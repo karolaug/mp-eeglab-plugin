@@ -22,7 +22,7 @@
 
 
 
-function [book] = defineMixedInbook(param,time,asym)
+function [book] = defineMixedInbook(param,time,asym,rect)
 % prepare book of envelopes according to params
 
 t=1:(length(time)*3);
@@ -72,33 +72,34 @@ while csigma<breakV
     
 end
 
-%% now prepare envelopes for rectangular atoms 
-% sig_start2=(minS+maxS)/2;
-% gc=gabor8Envelope(sig_start2,t);
-% sig_stop2=fminsearch(@(x) minSigEnerg8(x,gc,dE,t),sig_start2);
-% par_sig=sig_stop2/sig_start2;
-% 
-% if par_sig<1
-%     par_sig=1/par_sig;
-% end
-% 
-% csigma=minS;
-% % stopping criterion
-% breakV=maxS*sqrt(par_sig);
-% 
-% while csigma<breakV
-%     [tmp_env,p,k,sr]=gabor8Envelope(csigma,t);
-%     book(iter).atom=tmp_env(p:k);
-%     book(iter).skok=minPosEnerg8(book(iter).atom,dE);
-%     book(iter).skok=max([1 book(iter).skok]);
-%     book(iter).sigma=csigma;
-%     book(iter).sr=round(sr);
-%     book(iter).type=3;
-%     book(iter).decay=0;
-%     csigma=csigma*par_sig;    
-%     iter=iter+1;
-% end
+if rect == 1
+% now prepare envelopes for rectangular atoms 
+    sig_start2=(minS+maxS)/2;
+    gc=gabor8Envelope(sig_start2,t);
+    sig_stop2=fminsearch(@(x) minSigEnerg8(x,gc,dE,t),sig_start2);
+    par_sig=sig_stop2/sig_start2;
 
+    if par_sig<1
+        par_sig=1/par_sig;
+    end
+
+    csigma=minS;
+    % stopping criterion
+    breakV=maxS*sqrt(par_sig);
+
+    while csigma<breakV
+        [tmp_env,p,k,sr]=gabor8Envelope(csigma,t);
+        book(iter).atom=tmp_env(p:k);
+        book(iter).skok=minPosEnerg8(book(iter).atom,dE);
+        book(iter).skok=max([1 book(iter).skok]);
+        book(iter).sigma=csigma;
+        book(iter).sr=round(sr);
+        book(iter).type=3;
+        book(iter).decay=0;
+        csigma=csigma*par_sig;    
+        iter=iter+1;
+    end
+end
 
 function [env,p,k,sr]=gaborEnvelope(sig,t)
 eps=1e-4;

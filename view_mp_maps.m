@@ -243,7 +243,9 @@ elseif nargin == 4
         %freqscale  = varargin{3};
         
         [time , freqs , map] = countAmap(BOOK , 1:EEG.pnts , EEG.srate , epoch_nr , channel_nr);
-        BOOK.map.map = map;
+        BOOK.map.map     = map;
+        BOOK.time        = time;
+        BOOK.frqencies   = freqs;
         BOOK.map.channel = channel_nr;
         BOOK.map.trial   = epoch_nr;
         

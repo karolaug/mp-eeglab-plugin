@@ -303,14 +303,12 @@ function original =  retrieve_original_signal(BOOK)
     global MPmapSettings;
     global EEG;
     
-    ch = str2num(BOOK.channel_labels{MPmapSettings.channelstag});
-    if isempty(ch)
-        ch = BOOK.channel_indexes(MPmapSettings.channelstag);  
-    end
+    ch = BOOK.channel_indexes(MPmapSettings.channelstag);
+    t  = BOOK.epoch_labels(MPmapSettings.trialstag);
     
     if EEG.trials == 1
         original = EEG.data(ch,:);
     else
-        original = EEG.data(ch,:,MPmapSettings.trialstag);
+        original = EEG.data(ch,:,t);
     end
 end

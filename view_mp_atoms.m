@@ -332,7 +332,7 @@ function plot_original(BOOK)
     title(MPatomSettings.originalaxis,'Original signal');
     MPatomSettings.yaxlimits=get(MPatomSettings.originalaxis,'YLim');
     ylabel(MPatomSettings.originalaxis , 'Amplitude');
-    xlim([MPatomSettings.time(1) , MPatomSettings.time(end)]);
+    xlim(MPatomSettings.originalaxis , [MPatomSettings.time(1) , MPatomSettings.time(end)]);
 end
 function plot_reconstruct(BOOK)
     global MPatomSettings;
@@ -342,7 +342,7 @@ function plot_reconstruct(BOOK)
     title(MPatomSettings.reconstructaxis,'Signal reconstruction');
     set(MPatomSettings.reconstructaxis,'YLim',MPatomSettings.yaxlimits);
     ylabel(MPatomSettings.reconstructaxis , 'Amplitude');
-    xlim([MPatomSettings.time(1) , MPatomSettings.time(end)]);
+    xlim(MPatomSettings.reconstructaxis , [MPatomSettings.time(1) , MPatomSettings.time(end)]);
 end
 function plot_atom(BOOK)
     global MPatomSettings;
@@ -353,7 +353,7 @@ function plot_atom(BOOK)
     set(MPatomSettings.a(3),'String',num2str(MPatomSettings.atomstag));
     ylabel(MPatomSettings.atomaxis , 'Amplitude');
     xlabel(MPatomSettings.atomaxis , 'Time [s]');
-    xlim([MPatomSettings.time(1) , MPatomSettings.time(end)]);
+    xlim(MPatomSettings.atomaxis , [MPatomSettings.time(1) , MPatomSettings.time(end)]);
     
     % adding vertical line at the beginning of a stimulation
     %hold on

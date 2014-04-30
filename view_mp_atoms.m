@@ -119,14 +119,17 @@ if strcmp(check_string,'new_plot')
     posframe = zeros(1,4);
     posframe(1,:) = [ 0.7500    0.0500    0.2300    0.4400 ]; % [] - frame
     posparam = zeros(6,4);
-    posparam(1,:) = [ 0.1000    0.8500    0.8000    0.1000 ]; % - amplitude label
-    posparam(2,:) = [ 0.2000    0.7500    0.7000    0.1000 ]; % - amplitude text
-    posparam(3,:) = [ 0.1000    0.6500    0.8000    0.1000 ]; % - width label
-    posparam(4,:) = [ 0.2000    0.5500    0.7000    0.1000 ]; % - width text
-    posparam(5,:) = [ 0.1000    0.4500    0.8000    0.1000 ]; % - frequency label
-    posparam(6,:) = [ 0.2000    0.3500    0.7000    0.1000 ]; % - frequency text
-    posparam(7,:) = [ 0.1000    0.2500    0.8000    0.1000 ]; % - latency label
-    posparam(8,:) = [ 0.2000    0.1500    0.7000    0.1000 ]; % - latency text
+    posparam(1,:)  = [ 0.1000    0.9000    0.8000    0.1000 ]; % - amplitude label
+    posparam(2,:)  = [ 0.2000    0.8500    0.7000    0.1000 ]; % - amplitude text
+    posparam(3,:)  = [ 0.1000    0.7500    0.8000    0.1000 ]; % - width label
+    posparam(4,:)  = [ 0.2000    0.6500    0.7000    0.1000 ]; % - width text
+    posparam(5,:)  = [ 0.1000    0.5500    0.8000    0.1000 ]; % - frequency label
+    posparam(6,:)  = [ 0.2000    0.4500    0.7000    0.1000 ]; % - frequency text
+    posparam(7,:)  = [ 0.1000    0.3500    0.8000    0.1000 ]; % - latency label
+    posparam(8,:)  = [ 0.2000    0.2500    0.7000    0.1000 ]; % - latency text
+    posparam(9,:)  = [ 0.1000    0.1500    0.8000    0.1000 ]; % - beginning label
+    posparam(10,:) = [ 0.2000    0.1000    0.7000    0.1000 ]; % - beginning text
+    
     MPatomSettings.f = zeros(9,1);
     MPatomSettings.f(1) = uipanel('Title','Atom parameters:','FontSize',12,...
              'BackgroundColor','white',...
@@ -188,7 +191,21 @@ if strcmp(check_string,'new_plot')
         'Position', posparam(8,:), ...
         'Tag','atom_latency_text',...
         'string','l_t');
-    
+ 
+    MPatomSettings.f(10) = uicontrol('Parent',MPatomSettings.f(1), ...
+        'Style','text', ...
+        'Units', 'normalized', ...
+        'BackgroundColor','white',...
+        'Position', posparam(9,:), ...
+        'Tag','atom_pocz_label',...
+        'string','Beginning:');
+    MPatomSettings.f(11) = uicontrol('Parent',MPatomSettings.f(1), ...
+        'Style','text', ...
+        'Units', 'normalized', ...
+        'BackgroundColor','white',...
+        'Position', posparam(10,:), ...
+        'Tag','atom_beginning_text',...
+        'string','p_t');
     
     % positions of controlls for atoms scrolling
     posatom = zeros(4,4);
@@ -379,4 +396,8 @@ function refresh_atom_parameters(BOOK)
     [val_max , ind_max] = max(real(BOOK.reconstruction(MPatomSettings.trialstag,MPatomSettings.channelstag,MPatomSettings.atomstag,:)));
     lat = ind_max / EEG.srate;
     set(MPatomSettings.f(9),'String',num2str(lat));
+    
+    ind_pocz = find(real(BOOK.reconstruction(MPatomSettings.trialstag,MPatomSettings.channelstag,MPatomSettings.atomstag,:)) > 1 , 1);
+    pocz = ind_pocz / EEG.srate;
+    set(MPatomSettings.f(11),'String',num2str(pocz));
 end

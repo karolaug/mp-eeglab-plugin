@@ -44,8 +44,11 @@ map = zeros(finalFlen,finalTlen);   % prepare matrix for a map
 
 siglen=length(time);
 time2len=round(siglen*0.05)*4;
-winRL=hann(time2len)';
-window2smooth=[winRL(1:end/2) ones(1,siglen-time2len) winRL(1+end/2:end)];
+
+%winRL=hann(time2len)';
+%window2smooth=[winRL(1:end/2) ones(1,siglen-time2len) winRL(1+end/2:end)];
+
+window2smooth = tukeywin(siglen,0.1)';
 
 X = squeeze(book.reconstruction(epoch,channel,:,:));
 Y = book.parameters(epoch,channel);

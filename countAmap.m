@@ -22,7 +22,7 @@
 
 
 
-function [time2, freqs2, map]=countAmap(book,time,SF,epoch,channel)
+function [time2, freqs2, map]=countAmap(book,time,SF,epoch,channel,freq_p,freq_k,scale_p,scale_k)
 % compute t-f map
 % book: book containing parameters of atoms to be plotted
 % time: indexes of samples
@@ -54,20 +54,25 @@ X = squeeze(book.reconstruction(epoch,channel,:,:));
 Y = book.parameters(epoch,channel);
 
 for ii = 1:size(Y.amplitudes,1)
-    atom     = real(X(ii,:));
-    env      = Y.envelopes(ii,:) .* abs(Y.amplitudes(ii));
-
-    realYwin = atom.*window2smooth;
-    zz       = fft(realYwin);
-    z        = abs(zz(1:floor(length(zz)/2+1) ));
     
-    z        = halfWidthGauss(z);
-    
-    z        = resample(z,finalFlen,length(z));
-    z        = z/max(z);
-    envelope = resample(env,finalTlen,length(env));
-    tmp     = z'*envelope;
-    map     = map + (tmp);
+    if Y.widths(ii) < scale_p || Y.widths(ii) > scale_k || Y.frequencies(ii) > freq_k || Y.frequencies(ii) < freq_p
+        
+    else
+        atom     = real(X(ii,:));
+        env      = Y.envelopes(ii,:) .* abs(Y.amplitudes(ii));
+        
+        realYwin = atom.*window2smooth;
+        zz       = fft(realYwin);
+        z        = abs(zz(1:floor(length(zz)/2+1) ));
+        
+        z        = halfWidthGauss(z);
+        
+        z        = resample(z,finalFlen,length(z));
+        z        = z/max(z);
+        envelope = resample(env,finalTlen,length(env));
+        tmp     = z'*envelope;
+        map     = map + (tmp);
+    end
 end
 
 function y=halfWidthGauss(z)

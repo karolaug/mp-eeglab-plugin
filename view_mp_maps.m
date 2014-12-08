@@ -47,12 +47,17 @@ if nargin == 2
         MPmapSettings.time = [1:EEG.pnts] / EEG.srate;
 
         MPmapSettings.freqscale = [0 , EEG.srate / 2];
+        
+        MPmapSettings.freqfilt  = [0 , EEG.srate / 2];
+        MPmapSettings.scalefilt = [0 , EEG.pnts / EEG.srate];
 
         MPmapSettings.figure = figure('UserData', MPmapSettings,...
           'Color', MPmapSettings.color, 'Toolbar' , 'figure' , 'name', MPmapSettings.title,...
           'MenuBar','figure','Position',MPmapSettings.position, ...
           'numbertitle', 'off', 'visible', 'on');
-
+      
+        set(MPmapSettings.figure , 'WindowKeyPressFcn' , {@key_pressed,BOOK});
+      
         % positions of controlls for epochs scrolling
         posepoch = zeros(4,4);
         posepoch(1,:) = [ 0.8500    0.8000    0.0300    0.0300 ]; % < - button
@@ -112,7 +117,8 @@ if nargin == 2
             'Position', poschan(3,:), ...
             'Style','edit', ...
             'Tag','epoch_text',...
-            'string', MPmapSettings.channelstag);
+            'string', MPmapSettings.channelstag,...
+            'Enable', 'off');
         MPmapSettings.ch(4) = uicontrol('Parent',MPmapSettings.figure, ...
             'Style','text', ...
             'Units', 'normalized', ...
@@ -155,6 +161,51 @@ if nargin == 2
             'Tag','posfreqscale_label',...
             'string','Scale Settings');
 
+        
+        % positions of controlls for filtration of resulting
+        % atoms on a map
+        posfilt = zeros(4,4);
+        posfilt(3,:) = [ 0.8500    0.2000    0.0300    0.0300 ]; % text window - freq
+        posfilt(5,:) = [ 0.8500    0.1700    0.0300    0.0300 ]; % text window - scale
+        posfilt(1,:) = [ 0.8900    0.1700    0.0550    0.0600 ]; % set-button
+        posfilt(2,:) = [ 0.8500    0.1100    0.1000    0.0300 ]; % default-button
+        posfilt(4,:) = [ 0.8500    0.2500    0.1000    0.0300 ]; % label
+        % creation of freqscale-controlls:
+        MPmapSettings.pf = zeros(4,1);
+        MPmapSettings.pf(1) = uicontrol('Parent',MPmapSettings.figure, ...
+            'Units', 'normalized', ...
+            'Position', posfilt(1,:), ...
+            'Tag','set_filt_button',...
+            'string','SET',...
+            'Callback','view_mp_maps(BOOK , ''set_filt'')');
+        MPmapSettings.pf(2) = uicontrol('Parent',MPmapSettings.figure, ...
+            'Units', 'normalized', ...
+            'Position', posfilt(2,:), ...
+            'Tag','set_filt_default_button',...
+            'string','DEFAULT',...
+            'Callback','view_mp_maps(BOOK , ''default_filt'')');
+        MPmapSettings.pf(3) = uicontrol('Parent',MPmapSettings.figure, ...
+            'Units', 'normalized', ...
+            'BackgroundColor',[1 1 1], ...
+            'Position', posfilt(3,:), ...
+            'Style','edit', ...
+            'Tag','freq_filt_text',...
+            'string', num2str(MPmapSettings.freqfilt));
+        MPmapSettings.pf(4) = uicontrol('Parent',MPmapSettings.figure, ...
+            'Style','text', ...
+            'Units', 'normalized', ...
+            'Position', posfilt(4,:), ...
+            'Tag','filt_label',...
+            'string','Frequency-Scale filter');
+        MPmapSettings.pf(5) = uicontrol('Parent',MPmapSettings.figure, ...
+            'Units', 'normalized', ...
+            'BackgroundColor',[1 1 1], ...
+            'Position', posfilt(5,:), ...
+            'Style','edit', ...
+            'Tag','scale_filt_text',...
+            'string', num2str(MPmapSettings.scalefilt));
+        
+        
         MPmapSettings.mapaxis    = axes('outerposition',[.0  .4  .8  .6]);
         refresh_map(BOOK);
 
@@ -198,7 +249,7 @@ if nargin == 2
             refresh_signal(BOOK);
         end
     elseif strcmp(map_string,'set_scale')
-        disp 'Setting frequency scale to the limits given';
+        disp 'Setting frequency scale to the given limits';
         MPmapSettings.freqscale = str2num(get(MPmapSettings.pfs(3) , 'String'));
 
 
@@ -223,12 +274,40 @@ if nargin == 2
 
         refresh_map(BOOK);
 
+    elseif strcmp(map_string,'set_filt')
+        disp 'Setting frequency-scale filtration to the given limits';
+        MPmapSettings.freqfilt  = str2num(get(MPmapSettings.pf(3) , 'String'));
+        MPmapSettings.scalefilt = str2num(get(MPmapSettings.pf(5) , 'String'));
+        
+        if MPmapSettings.freqfilt(1) > MPmapSettings.freqfilt(2)
+            tmp = MPmapSettings.freqfilt(1);
+            MPmapSettings.freqfilt(1) = MPmapSettings.freqfilt(2);
+            MPmapSettings.freqfilt(2) = tmp;
+            set(MPmapSettings.pf(3) ,'String',num2str(MPmapSettings.freqfilt));
+        end
+        
+        if MPmapSettings.scalefilt(1) > MPmapSettings.scalefilt(2)
+            tmp = MPmapSettings.scalefilt(1);
+            MPmapSettings.scalefilt(1) = MPmapSettings.scalefilt(2);
+            MPmapSettings.scalefilt(2) = tmp;
+            set(MPmapSettings.pf(5) ,'String',num2str(MPmapSettings.scalefilt));
+        end
 
+        refresh_map(BOOK);
+        
     elseif strcmp(map_string,'default_scale')
         disp 'Setting frequency scale to the default limits';
         MPmapSettings.freqscale = [0 , EEG.srate / 2];
         refresh_map(BOOK);
         set(MPmapSettings.pfs(3) ,'String',num2str(MPmapSettings.freqscale));
+
+    elseif strcmp(map_string,'default_filt')
+        disp 'Setting filt parameters to default values';
+        MPmapSettings.freqfilt  = [0 , EEG.srate / 2];
+        MPmapSettings.scalefilt = [0 , EEG.pnts/EEG.srate];
+        refresh_map(BOOK);
+        set(MPmapSettings.pf(3) ,'String',num2str(MPmapSettings.freqfilt));
+        set(MPmapSettings.pf(5) ,'String',num2str(MPmapSettings.scalefilt));
         
     elseif strcmp(map_string,'no_plot')
         disp 'Not a proper keyword -- aborting';
@@ -242,7 +321,7 @@ elseif nargin == 4
         epoch_nr   = varargin{2};
         %freqscale  = varargin{3};
         
-        [time , freqs , map] = countAmap(BOOK , 1:EEG.pnts , EEG.srate , epoch_nr , channel_nr);
+        [time , freqs , map] = countAmap(BOOK , 1:EEG.pnts , EEG.srate , epoch_nr , channel_nr , 0 , EEG.srate/2 , 0 , EEG.pnts/EEG.srate);
         BOOK.map.map         = map;
         BOOK.map.time        = time;
         BOOK.map.frequencies = freqs;
@@ -265,9 +344,13 @@ end
 function refresh_map(BOOK)
     global MPmapSettings;
     global EEG;
-    %global BOOK;
     
-    [time , freqs , map] = countAmap(BOOK , 1:EEG.pnts , EEG.srate , MPmapSettings.trialstag , MPmapSettings.channelstag);
+    freq_p  = MPmapSettings.freqfilt(1);
+    freq_k  = MPmapSettings.freqfilt(2);
+    scale_p = MPmapSettings.scalefilt(1);
+    scale_k = MPmapSettings.scalefilt(2);
+    
+    [time , freqs , map] = countAmap(BOOK , 1:EEG.pnts , EEG.srate , MPmapSettings.trialstag , MPmapSettings.channelstag , freq_p , freq_k , scale_p , scale_k);
     
     flimits = freqs(1):5:freqs(end);
     
@@ -310,5 +393,27 @@ function original =  retrieve_original_signal(BOOK)
         original = EEG.data(ch,:);
     else
         original = EEG.data(ch,:,t);
+    end
+end
+
+
+function key_pressed(~,eventDat,BOOK)    
+    global MPmapSettings;
+    
+    old_trial = MPmapSettings.trialstag;
+    
+    drawnow;
+    
+    if strcmp(eventDat.Key , 'return')
+        
+        MPmapSettings.trialstag = str2double(get(MPmapSettings.e(3) , 'String'));
+        
+        if MPmapSettings.trialstag > size(BOOK.epoch_labels,2) || MPmapSettings.trialstag < 0
+            disp 'Wrong epoch number!';
+            set(MPmapSettings.e(3) , 'String', num2str(old_trial));
+        else
+            refresh_map(BOOK);
+            refresh_signal(BOOK);
+        end
     end
 end

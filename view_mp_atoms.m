@@ -49,6 +49,9 @@ if strcmp(check_string,'new_plot')
       'Color', MPatomSettings.color, 'Toolbar' , 'figure' , 'name', MPatomSettings.title,...
       'MenuBar','figure','Position',MPatomSettings.position, ...
       'numbertitle', 'off', 'visible', 'on');
+  
+    set(MPatomSettings.figure , 'WindowKeyPressFcn' , {@key_pressed,BOOK});
+    
     % positions of controlls for epochs scrolling
     posepoch = zeros(4,4);
     posepoch(1,:) = [ 0.8500    0.8000    0.0300    0.0300 ]; % < - button
@@ -108,7 +111,8 @@ if strcmp(check_string,'new_plot')
         'Position', poschan(3,:), ...
         'Style','edit', ...
         'Tag','epoch_text',...
-        'string', BOOK.channel_labels{1});
+        'string', BOOK.channel_labels{1},...
+        'Enable', 'off');
     MPatomSettings.ch(4) = uicontrol('Parent',MPatomSettings.figure, ...
         'Style','text', ...
         'Units', 'normalized', ...
@@ -400,4 +404,30 @@ function refresh_atom_parameters(BOOK)
     ind_pocz = find(real(BOOK.reconstruction(MPatomSettings.trialstag,MPatomSettings.channelstag,MPatomSettings.atomstag,:)) > 1 , 1);
     pocz = ind_pocz / EEG.srate;
     set(MPatomSettings.f(11),'String',num2str(pocz));
+end
+
+function key_pressed(~,eventDat,BOOK)    
+    global MPatomSettings;
+    
+    old_trial = MPatomSettings.trialstag;
+    old_atom  = MPatomSettings.atomstag;
+    
+    drawnow;
+    
+    if strcmp(eventDat.Key , 'return')
+        
+        MPatomSettings.trialstag = str2double(get(MPatomSettings.e(3) , 'String'));
+        MPatomSettings.atomstag  = str2double(get(MPatomSettings.a(3) , 'String'));
+        
+        if MPatomSettings.trialstag > size(BOOK.epoch_labels,2) || MPatomSettings.trialstag < 0 || MPatomSettings.atomstag < 0 || MPatomSettings.atomstag > size(BOOK.reconstruction(MPatomSettings.trialstag,MPatomSettings.channelstag,:,:),3)
+            disp 'Wrong epoch or atom number!';
+            set(MPatomSettings.e(3) , 'String', num2str(old_trial));
+            set(MPatomSettings.a(3) , 'String', num2str(old_atom));
+        else
+            plot_original(BOOK);
+            plot_reconstruct(BOOK);
+            plot_atom(BOOK);
+            refresh_atom_parameters(BOOK);
+        end
+    end
 end

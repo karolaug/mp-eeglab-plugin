@@ -29,7 +29,7 @@ function [BOOK,LASTCOM] = pop_mp_calc(EEG , varargin)
     %   >> pop_mp_calc(EEG);          % pop_up window
     %   >> mp_calc(EEG,channel_nr,epoch_nr,minS,maxS,dE,energy,iter,nfft,asym);
 
-    
+    %BOOK = [];
     LASTCOM = [];
 
     if nargin < 1
@@ -42,9 +42,6 @@ function [BOOK,LASTCOM] = pop_mp_calc(EEG , varargin)
     end
 
     if nargin == 1
-        
-        BOOK = [];
-        
         title_string = 'Parameterise a signal in time-frequency domain by means of MP procedure -- pop_mp_calc()';
         geometry = { 1 [1 1] [1 1] 1 1 [1 1] [1 1] [1 1] 1 1 [1 1] [1 1] [1 1] [1 1] [1 1]};
         uilist = { ...
@@ -98,7 +95,6 @@ function [BOOK,LASTCOM] = pop_mp_calc(EEG , varargin)
     elseif nargin == 11
         % mp_calc(EEG,channel_nr,epoch_nr,minS,maxS,dE,energy,iter,nfft,asym);
         params = [];
-        BOOK   = [];
                 
         try
             params.channel_nr = varargin{1};
@@ -114,32 +110,13 @@ function [BOOK,LASTCOM] = pop_mp_calc(EEG , varargin)
         catch ME1
             throw(ME1);
         end
-    elseif nargin == 12
-        % mp_calc(EEG,BOOK,channel_nr,epoch_nr,minS,maxS,dE,energy,iter,nfft,asym);
-        params = [];
-                
-        try
-            BOOK = varargin{1};
-            
-            params.channel_nr = varargin{2};
-            params.epoch_nr   = varargin{3};
-            params.minS       = varargin{4};
-            params.maxS       = varargin{5};
-            params.dE         = varargin{6};
-            params.energy     = varargin{7};
-            params.iter       = varargin{8};
-            params.nfft       = varargin{9};
-            params.asym       = varargin{10};
-            params.rect       = varargin{11};
-        catch ME1
-            throw(ME1);
-        end
     else
         disp 'Not enough input parameters -- aborting';
         return;
     end
     
     try
+        BOOK = [];
         BOOK.reconstruction = zeros(size(params.epoch_nr,2),size(params.channel_nr,2),params.iter,size(EEG.data,2));
         for ch = 1:1:size(params.channel_nr,2)
             for ep = 1:1:size(params.epoch_nr,2)

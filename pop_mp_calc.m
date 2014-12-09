@@ -152,6 +152,10 @@ function [BOOK,LASTCOM] = pop_mp_calc(EEG , varargin)
 
         tmpstring = 'pop_mp_calc(EEG';
         
+        if nargin == 12
+            tmpstring = sprintf('%s%s' , tmpstring , ' , BOOK');
+        end
+        
         fields = fieldnames(params);
         for ind1 = 1:numel(fields)
             tmpstring = [tmpstring , ' , ' , num2str(params.(fields{ind1}))]; 

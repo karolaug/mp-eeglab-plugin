@@ -161,6 +161,26 @@ if nargin == 2
             'Tag','posfreqscale_label',...
             'string','Scale Settings');
 
+        % positions of controlls for original/reconstruction checkbox
+        
+        posorigrec = zeros(2,4);
+        posorigrec(1,:) = [ 0.8600    0.3000    0.0900    0.0300 ]; % text window
+        posorigrec(2,:) = [ 0.8500    0.3000    0.0100    0.0300 ]; % set-button
+        
+        MPmapSettings.por = zeros(2,1);
+        MPmapSettings.por(1) = uicontrol('Parent',MPmapSettings.figure, ...
+            'Style','text', ...
+            'Units', 'normalized', ...
+            'Position', posorigrec(1,:), ...
+            'Tag','posorigrec_label',...
+            'string','Plot original signal');
+        MPmapSettings.por(2) = uicontrol('Parent',MPmapSettings.figure, ...
+            'Style','checkbox', ...
+            'Units', 'normalized', ...
+            'Position', posorigrec(2,:), ...
+            'Value',1,...
+            'Tag','posorigrec_checkbox',...
+            'Callback' , 'view_mp_maps(BOOK , ''checkbox_clicked'')');
         
         % positions of controlls for filtration of resulting
         % atoms on a map
@@ -294,6 +314,7 @@ if nargin == 2
         end
 
         refresh_map(BOOK);
+        refresh_signal(BOOK);
         
     elseif strcmp(map_string,'default_scale')
         disp 'Setting frequency scale to the default limits';
@@ -306,8 +327,13 @@ if nargin == 2
         MPmapSettings.freqfilt  = [0 , EEG.srate / 2];
         MPmapSettings.scalefilt = [0 , EEG.pnts/EEG.srate];
         refresh_map(BOOK);
+        refresh_signal(BOOK);
         set(MPmapSettings.pf(3) ,'String',num2str(MPmapSettings.freqfilt));
         set(MPmapSettings.pf(5) ,'String',num2str(MPmapSettings.scalefilt));
+        
+    elseif strcmp(map_string,'checkbox_clicked')
+        get(MPmapSettings.por(2) ,'Value')
+        refresh_signal(BOOK);
         
     elseif strcmp(map_string,'no_plot')
         disp 'Not a proper keyword -- aborting';
@@ -381,11 +407,13 @@ function refresh_signal(BOOK)
     xlabel(MPmapSettings.signalaxis , 'Time [s]');
     ylabel(MPmapSettings.signalaxis , 'Amplitude');
     
-    hold on;
-    original =  retrieve_original_signal(BOOK);
-    plot(MPmapSettings.time , original ,'r','Parent',MPmapSettings.signalaxis);
-    xlim([MPmapSettings.time(1) , MPmapSettings.time(end)]);
+    if get(MPmapSettings.por(2) ,'Value') == 1
+        hold on;
+        original =  retrieve_original_signal(BOOK);
+        plot(MPmapSettings.time , original ,'r','Parent',MPmapSettings.signalaxis);
+    end
     
+    xlim([MPmapSettings.time(1) , MPmapSettings.time(end)]);
     set(MPmapSettings.e(3) ,'String',num2str(BOOK.epoch_labels(MPmapSettings.trialstag)));
     set(MPmapSettings.ch(3),'String',num2str(BOOK.channel_labels{MPmapSettings.channelstag}));
     hold off;

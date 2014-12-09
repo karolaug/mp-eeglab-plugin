@@ -366,17 +366,14 @@ function refresh_signal(BOOK)
     global MPmapSettings;
     %global BOOK;
     
-    X = real(squeeze(BOOK.reconstruction(MPmapSettings.trialstag,MPmapSettings.channelstag,:,:)));
-    for ind_atom = 1 : size(BOOK.parameters(MPmapSettings.trialstag,MPmapSettings.channelstag).widths , 1)
+    X = squeeze(BOOK.reconstruction(MPmapSettings.trialstag,MPmapSettings.channelstag,:,:));
+    for ind_atom = 1 : size(X,1)
         width = BOOK.parameters(MPmapSettings.trialstag,MPmapSettings.channelstag).widths(ind_atom);
         freq  = BOOK.parameters(MPmapSettings.trialstag,MPmapSettings.channelstag).frequencies(ind_atom);
         
-        if freq < MPmapSettings.freqfilt(1) || freq > MPmapSettings.freqfilt(2) || width < MPmapSettings.scalefilt(1) || width > MPmapSettings.scalefilt(2)
-            X(ind_atom,:) = zeros(1,size(X,2));
-        end
-        
+        if
     end
-    plot(MPmapSettings.time , sum(X,1),'b','Parent',MPmapSettings.signalaxis);
+    plot(MPmapSettings.time , sum(real(X),1),'b','Parent',MPmapSettings.signalaxis);
     title(MPmapSettings.signalaxis,'Signal reconstruction');
     xlabel(MPmapSettings.signalaxis , 'Time [s]');
     ylabel(MPmapSettings.signalaxis , 'Amplitude');

@@ -353,12 +353,39 @@ elseif nargin == 4
         BOOK.map.frequencies = freqs;
         BOOK.map.channel     = channel_nr;
         BOOK.map.trial       = epoch_nr;
-        
+
         return;
     else
         disp 'Not a proper keyword -- aborting';
         return;
     end
+    
+elseif nargin == 6
+    if strcmp(map_string,'no_plot')
+        disp 'No plot would be generated, just a map field within BOOK variable would hold the result'
+        channel_nr = varargin{1};
+        epoch_nr   = varargin{2};
+        freqsfilt  = varargin{3};
+        scalefilt  = varargin{4};
+        
+        fp = freqsfilt(1);
+        fk = freqsfilt(2);
+        sp = scalefilt(1);
+        sk = scalefilt(2);
+        
+        [time , freqs , map] = countAmap(BOOK , 1:EEG.pnts , EEG.srate , epoch_nr , channel_nr , fp , fk , sp , sk);
+        BOOK.map.map         = map;
+        BOOK.map.time        = time;
+        BOOK.map.frequencies = freqs;
+        BOOK.map.channel     = channel_nr;
+        BOOK.map.trial       = epoch_nr;
+
+        return;
+    else
+        disp 'Not a proper keyword -- aborting';
+        return;
+    end
+    
 else
     disp 'Not enough or too many input parameters -- aborting';
     return;

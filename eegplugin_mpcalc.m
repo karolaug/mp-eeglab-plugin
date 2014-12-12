@@ -31,7 +31,7 @@ end;
 Toolmenu = findobj(fig, 'tag', 'tools');
 MPmenu = uimenu( Toolmenu, 'label', 'Matching Pursuit analysis');
 
-com1 = [ try_strings.no_check 'if ~exist(''BOOK'',''var'') || isempty(BOOK); [BOOK , LASTCOM] = pop_mp_calc(EEG); else; [X , LASTCOM] = pop_mp_calc(EEG); end; if exist(''X'',''var''); if isempty(X); clear X; else; BOOK = X; clear X; end; end;' catch_strings.add_to_hist ];
+com1 = [ try_strings.no_check 'if ~exist(''BOOK'',''var'') || isempty(BOOK); [BOOK , LASTCOM] = pop_mp_calc(EEG); else; [X , LASTCOM] = pop_mp_calc(EEG , BOOK); end; if exist(''X'',''var''); if isempty(X); clear X; else; BOOK = X; clear X; end; end;' catch_strings.add_to_hist ];
 com2 = [ try_strings.no_check 'if ~exist(''BOOK'',''var''); BOOK = []; end; [BOOK , LASTCOM] = view_mp_maps(BOOK , ''new_plot'');' catch_strings.add_to_hist ];
 com3 = [ try_strings.no_check 'if ~exist(''BOOK'',''var''); BOOK = []; end; [BOOK , LASTCOM] = view_mp_atoms(BOOK , ''new_plot'');' catch_strings.add_to_hist ];
 

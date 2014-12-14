@@ -28,6 +28,17 @@ global MPmapSettings;
 global EEG;
 LASTCOM = [];
 
+string_prefix  = '[BOOK , LASTCOM] = view_mp_maps(BOOK';
+string_postfix = map_string;
+tmpcom = [string_prefix , ' , ''' , string_postfix , ''];
+
+for ind1 = 1 : size(varargin)
+   tmpcom = [tmpcom , ' , ' , num2str(varargin{ind1})]; 
+end
+
+tmpcom = [tmpcom , ');'];
+LASTCOM = [LASTCOM , tmpcom];
+
 if nargin == 2
     if strcmp(map_string,'new_plot')
 

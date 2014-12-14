@@ -171,7 +171,7 @@ function [BOOK,LASTCOM] = pop_mp_calc(EEG , varargin)
             end
         end
 
-        tmpstring = 'pop_mp_calc(EEG';
+        tmpstring = '[BOOK , LASTCOM] = pop_mp_calc(EEG';
         
         if nargin == 12
             tmpstring = sprintf('%s%s' , tmpstring , ' , BOOK');

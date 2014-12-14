@@ -28,6 +28,18 @@ global MPmapSettings;
 global EEG;
 LASTCOM = [];
 
+string_prefix  = '[BOOK , LASTCOM] = view_mp_maps(BOOK';
+string_postfix = check_string;
+tmpcom = [string_prefix , ' , ''' , string_postfix , ''];
+
+for ind1 = 1 : size(varargin)
+   tmpcom = [tmpcom , ]; 
+end
+
+%');'];
+
+LASTCOM = [LASTCOM , tmpcom];
+
 if nargin == 2
     if strcmp(map_string,'new_plot')
 
@@ -161,6 +173,26 @@ if nargin == 2
             'Tag','posfreqscale_label',...
             'string','Scale Settings');
 
+        % positions of controlls for original/reconstruction checkbox
+        
+        posorigrec = zeros(2,4);
+        posorigrec(1,:) = [ 0.8600    0.3000    0.0900    0.0300 ]; % text window
+        posorigrec(2,:) = [ 0.8500    0.3000    0.0100    0.0300 ]; % set-button
+        
+        MPmapSettings.por = zeros(2,1);
+        MPmapSettings.por(1) = uicontrol('Parent',MPmapSettings.figure, ...
+            'Style','text', ...
+            'Units', 'normalized', ...
+            'Position', posorigrec(1,:), ...
+            'Tag','posorigrec_label',...
+            'string','Plot original signal');
+        MPmapSettings.por(2) = uicontrol('Parent',MPmapSettings.figure, ...
+            'Style','checkbox', ...
+            'Units', 'normalized', ...
+            'Position', posorigrec(2,:), ...
+            'Value',1,...
+            'Tag','posorigrec_checkbox',...
+            'Callback' , 'view_mp_maps(BOOK , ''checkbox_clicked'')');
         
         % positions of controlls for filtration of resulting
         % atoms on a map
@@ -294,6 +326,7 @@ if nargin == 2
         end
 
         refresh_map(BOOK);
+        refresh_signal(BOOK);
         
     elseif strcmp(map_string,'default_scale')
         disp 'Setting frequency scale to the default limits';
@@ -306,8 +339,13 @@ if nargin == 2
         MPmapSettings.freqfilt  = [0 , EEG.srate / 2];
         MPmapSettings.scalefilt = [0 , EEG.pnts/EEG.srate];
         refresh_map(BOOK);
+        refresh_signal(BOOK);
         set(MPmapSettings.pf(3) ,'String',num2str(MPmapSettings.freqfilt));
         set(MPmapSettings.pf(5) ,'String',num2str(MPmapSettings.scalefilt));
+        
+    elseif strcmp(map_string,'checkbox_clicked')
+        get(MPmapSettings.por(2) ,'Value')
+        refresh_signal(BOOK);
         
     elseif strcmp(map_string,'no_plot')
         disp 'Not a proper keyword -- aborting';
@@ -327,12 +365,39 @@ elseif nargin == 4
         BOOK.map.frequencies = freqs;
         BOOK.map.channel     = channel_nr;
         BOOK.map.trial       = epoch_nr;
-        
+
         return;
     else
         disp 'Not a proper keyword -- aborting';
         return;
     end
+    
+elseif nargin == 6
+    if strcmp(map_string,'no_plot')
+        disp 'No plot would be generated, just a map field within BOOK variable would hold the result'
+        channel_nr = varargin{1};
+        epoch_nr   = varargin{2};
+        freqsfilt  = varargin{3};
+        scalefilt  = varargin{4};
+        
+        fp = freqsfilt(1);
+        fk = freqsfilt(2);
+        sp = scalefilt(1);
+        sk = scalefilt(2);
+        
+        [time , freqs , map] = countAmap(BOOK , 1:EEG.pnts , EEG.srate , epoch_nr , channel_nr , fp , fk , sp , sk);
+        BOOK.map.map         = map;
+        BOOK.map.time        = time;
+        BOOK.map.frequencies = freqs;
+        BOOK.map.channel     = channel_nr;
+        BOOK.map.trial       = epoch_nr;
+
+        return;
+    else
+        disp 'Not a proper keyword -- aborting';
+        return;
+    end
+    
 else
     disp 'Not enough or too many input parameters -- aborting';
     return;
@@ -366,23 +431,28 @@ function refresh_signal(BOOK)
     global MPmapSettings;
     %global BOOK;
     
-    X = squeeze(BOOK.reconstruction(MPmapSettings.trialstag,MPmapSettings.channelstag,:,:));
-    for ind_atom = 1 : size(X,1)
+    X = real(squeeze(BOOK.reconstruction(MPmapSettings.trialstag,MPmapSettings.channelstag,:,:)));
+    for ind_atom = 1 : size(BOOK.parameters(MPmapSettings.trialstag,MPmapSettings.channelstag).widths , 1)
         width = BOOK.parameters(MPmapSettings.trialstag,MPmapSettings.channelstag).widths(ind_atom);
         freq  = BOOK.parameters(MPmapSettings.trialstag,MPmapSettings.channelstag).frequencies(ind_atom);
         
-        if
+        if freq < MPmapSettings.freqfilt(1) || freq > MPmapSettings.freqfilt(2) || width < MPmapSettings.scalefilt(1) || width > MPmapSettings.scalefilt(2)
+            X(ind_atom,:) = zeros(1,size(X,2));
+        end
+        
     end
-    plot(MPmapSettings.time , sum(real(X),1),'b','Parent',MPmapSettings.signalaxis);
+    plot(MPmapSettings.time , sum(X,1),'b','Parent',MPmapSettings.signalaxis);
     title(MPmapSettings.signalaxis,'Signal reconstruction');
     xlabel(MPmapSettings.signalaxis , 'Time [s]');
     ylabel(MPmapSettings.signalaxis , 'Amplitude');
     
-    hold on;
-    original =  retrieve_original_signal(BOOK);
-    plot(MPmapSettings.time , original ,'r','Parent',MPmapSettings.signalaxis);
-    xlim([MPmapSettings.time(1) , MPmapSettings.time(end)]);
+    if get(MPmapSettings.por(2) ,'Value') == 1
+        hold on;
+        original =  retrieve_original_signal(BOOK);
+        plot(MPmapSettings.time , original ,'r','Parent',MPmapSettings.signalaxis);
+    end
     
+    xlim([MPmapSettings.time(1) , MPmapSettings.time(end)]);
     set(MPmapSettings.e(3) ,'String',num2str(BOOK.epoch_labels(MPmapSettings.trialstag)));
     set(MPmapSettings.ch(3),'String',num2str(BOOK.channel_labels{MPmapSettings.channelstag}));
     hold off;

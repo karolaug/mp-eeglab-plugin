@@ -25,7 +25,7 @@ global MPatomSettings;
 global EEG;
 LASTCOM = [];
 
-string_prefix  = '[BOOK , LASTCOM] = view_mp_atoms(BOOK';
+string_prefix  = 'view_mp_atoms(BOOK';
 string_postfix = check_string;
 tmpcom = [string_prefix , ' , ''' , string_postfix , ''');'];
 
@@ -351,13 +351,13 @@ elseif strcmp(check_string, 'spec_plot')
       'MenuBar','figure','Position',MPatomSettings.position, ...
       'numbertitle', 'off', 'visible', 'on');
         
-        MPatomSettings.originalaxis = axes('outerposition',[.025  .7  .95  .3]);
-        MPatomSettings.reconstructaxis = axes('outerposition',[.025  .4  .95  .3]);
-        MPatomSettings.atomaxis = axes('outerposition',[.025  .1  .95  .3]);
+        MPatomSettings.originalaxis = axes('outerposition',[.0  .7  .8  .3]);
+        MPatomSettings.reconstructaxis = axes('outerposition',[.0  .4  .8  .3]);
+        MPatomSettings.atomaxis = axes('outerposition',[.0  .1  .8  .3]);
   
         plot_original(BOOK);
         plot_reconstruct(BOOK);
-        plot_atom(BOOK , check_string);
+        plot_atom(BOOK);
         
     else
         disp 'Wrong number of parameters -- aborting';
@@ -402,19 +402,13 @@ function plot_reconstruct(BOOK)
     ylabel(MPatomSettings.reconstructaxis , 'Amplitude');
     xlim(MPatomSettings.reconstructaxis , [MPatomSettings.time(1) , MPatomSettings.time(end)]);
 end
-function plot_atom(BOOK , varargin)
+function plot_atom(BOOK)
     global MPatomSettings;
     
     plot(MPatomSettings.time , squeeze(real(BOOK.reconstruction(MPatomSettings.trialstag,MPatomSettings.channelstag,MPatomSettings.atomstag,:))),'k','Parent',MPatomSettings.atomaxis);
     title(MPatomSettings.atomaxis,'Reconstructing functions');
     set(MPatomSettings.atomaxis,'YLim',MPatomSettings.yaxlimits);
-    if nargin == 1
-        set(MPatomSettings.a(3),'String',num2str(MPatomSettings.atomstag));
-    elseif nargin == 2 && strcmp( varargin{1} , 'spec_plot') == 1 
-        
-    else
-        disp 'Something is wrong -- aborting';
-    end
+    set(MPatomSettings.a(3),'String',num2str(MPatomSettings.atomstag));
     ylabel(MPatomSettings.atomaxis , 'Amplitude');
     xlabel(MPatomSettings.atomaxis , 'Time [s]');
     xlim(MPatomSettings.atomaxis , [MPatomSettings.time(1) , MPatomSettings.time(end)]);
@@ -440,7 +434,7 @@ function refresh_atom_parameters(BOOK)
     freq = BOOK.parameters(MPatomSettings.trialstag,MPatomSettings.channelstag).frequencies(MPatomSettings.atomstag);
     set(MPatomSettings.f(7),'String',num2str(freq));
     
-    [~ , ind_max] = max(real(BOOK.reconstruction(MPatomSettings.trialstag,MPatomSettings.channelstag,MPatomSettings.atomstag,:)));
+    [val_max , ind_max] = max(real(BOOK.reconstruction(MPatomSettings.trialstag,MPatomSettings.channelstag,MPatomSettings.atomstag,:)));
     lat = ind_max / EEG.srate;
     set(MPatomSettings.f(9),'String',num2str(lat));
     

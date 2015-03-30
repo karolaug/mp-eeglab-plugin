@@ -1,6 +1,6 @@
 %    MP MATLAB plugin
 %
-%    Copyright (C) 2013 Tomasz Spustek, Konrad Kwaśkiewicz, Karol Auguštin
+%    Copyright (C) 2013 Tomasz Spustek, Konrad Kwa�kiewicz, Karol Auguštin
 %
 %    This program is free software: you can redistribute it and/or modify
 %    it under the terms of the GNU General Public License as published by
@@ -16,11 +16,11 @@
 %    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 %    Tomasz Spustek <tomasz@spustek.pl>
-%    Konrad Kwaśkiewicz <konrad.kwaskiewicz@gmail.com>
+%    Konrad Kwa�kiewicz <konrad.kwaskiewicz@gmail.com>
 %    Karol Auguštin <karol@augustin.pl>
 
 
-function [ALLEEG , EEG , CURRENTSET , X] = simulate(EEG, ALLEEG, CURRENTSET, name)
+function [ALLEEG , EEG , CURRENTSET , X] = mp_simulate(EEG, ALLEEG, CURRENTSET, name)
 
 signal = zeros(3,512,3);
 

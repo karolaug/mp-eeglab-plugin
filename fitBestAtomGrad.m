@@ -22,7 +22,7 @@
 
 
 
-function [omega amplitude envelope reconstruction miOut sigmaOut decayOut] = fitBestAtomGrad( mmax,mi0,sigma0,omega,decay0,signal,tmptime1,TYPE,asym)
+function [omega,amplitude,envelope,reconstruction,miOut,sigmaOut,decayOut] = fitBestAtomGrad( mmax,mi0,sigma0,omega,decay0,signal,tmptime1,TYPE,asym)
 epsilon=1e-3;
 time=1:length(signal);
 time=time-tmptime1;
